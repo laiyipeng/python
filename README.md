@@ -4,7 +4,8 @@ py_project
 Spider:
 
 content = response.read().decode('utf-8')
-pattern = re.compile('<div.*?author">.*?<a.*?<img.*?>(.*?)</a>.*?<div.*?'+'content">(.*?)<!--(.*?)-->.*?</div>(.*?)<div class="stats.*?class="number">(.*?)</i>',re.S)
+pattern = re.compile('<div.*?author">.*?<a.*?<img.*?>(.*?)</a>.*?<div.*?'+
+                         'content">(.*?)<!--(.*?)-->.*?</div>(.*?)<div class="stats.*?class="number">(.*?)</i>',re.S)
 items = re.findall(pattern,content)
 for item in items:
     print item[0],item[1],item[2],item[3],item[4]
