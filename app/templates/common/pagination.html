@@ -1,0 +1,31 @@
+{% macro render_pagination() %}
+    <div class="pagination" style="float: right">
+        <ul>
+            {% if page > 0 %}
+                {#        <li class="active"><a href="?page=0{{ args }}">首页</a></li>#}
+                <li class="active"><a href="?page={{ page-1 }}{{ args }}">«</a></li>
+            {% endif %}
+            {#    {%- for p in range(pages) %}#}
+            {#        {% if p %}#}
+            {#            {% if p != page %}#}
+            {#                <li class="">#}
+            {#                    <a href="?page={{ p }}{{ args }}">{{ p }}</a>#}
+            {#                </li>#}
+            {#            {% else %}#}
+            {#                <li class="active">#}
+            {#                    <a href="?page={{ p }}{{ args }}">{{ p }}</a>#}
+            {#                </li>#}
+            {#            {% endif %}#}
+            {#        {% else %}#}
+            {#                <li class="disabled">#}
+            {#                    <a>......</a>#}
+            {#                </li>#}
+            {#        {% endif %}#}
+            {#    {%- endfor %}#}
+            <li class="active"><a href="?page={{ page }}{{ args }}">{{ page + 1 }}</a></li>
+            {% if page < pages - 1 %}
+                <li class="active"><a href="?page={{ page + 1 }}{{ args }}">»</a></li>
+            {% endif %}
+        </ul>
+    </div>
+{% endmacro %}

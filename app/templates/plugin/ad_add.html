@@ -1,0 +1,514 @@
+{% extends "plugin/layout.html" %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="/static/css/checkbox.css" rel="stylesheet" type="text/css"/>
+    <style>
+    .ui.dropdown.selection{
+        width: 100%;
+    }
+    </style>
+{% endblock %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('ad_add') }}
+{% endblock %}
+
+{% block content %}
+    <h3 class="ui horizontal divider header"><i class="circular tag icon"></i> 添加广告 </h3>
+
+
+
+    <form class="form-horizontal" method="post" enctype=multipart/form-data style="width: 90%">
+        <div style="display: {{ step1 }}; margin-bottom: 200px">
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">产品名称</label>
+
+                <div class="col-sm-4">
+                    <input type="appname" class="form-control" id="" placeholder="" name="productname"
+                           value={{ productname }}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">首字母拼写</label>
+
+                <div class="col-sm-4">
+                    <input type="appname" class="form-control" id="" placeholder="" name="title_acronym"
+                           value={{ title_acronym }}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">分发id</label>
+
+                <div class="col-sm-4">
+                    <input type="appname" class="form-control" id="" placeholder="" name="w_id"
+                           value={{ w_id }}>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">链接类型：</label>
+
+                <div class="col-sm-4">
+                    <select name="target_type" style="width: 100px">
+                        <option value="2" {% if target_type == 2 %}selected{% endif %}>下载包</option>
+                        <option value="1" {% if target_type == 1 %}selected{% endif %}>网页链接</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">包名</label>
+
+                <div class="col-sm-4">
+                    <input type="appname" class="form-control" id="" placeholder="" name="packname"
+                           value={{ packname }}>
+                </div>
+                <div class="col-sm-5">
+                    <button type="button" class="btn btn-sm btn-danger hide" id="packname">！</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">链接地址</label>
+
+                <div class="col-sm-4">
+                    <input type="appname" class="form-control" id="" placeholder="" name="target"
+                           onblur="judge_link(this)" value={{ target }}>
+                </div>
+                <div class="col-sm-5">
+                    <button type="button" class="btn btn-sm btn-danger hide" id="target">！</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">短链接</label>
+
+                <div class="col-sm-4">
+                    <input type="appname" class="form-control" id="" placeholder="" name="target_logo"
+                           value={{ target_logo }}>
+                </div>
+                <div class="col-sm-5">
+                    <button type="button" class="btn btn-sm btn-danger hide" id="target_logo">！</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">应用介绍</label>
+
+                <div class="col-sm-4">
+                    <input class="form-control" id="" placeholder="" name="contant" value={{ contant }}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">安装成功后推送文字</label>
+
+                <div class="col-sm-4">
+                    <input type="appname" class="form-control" id="" placeholder="" name="contant_installed"
+                           value={{ contant_installed }}>
+                </div>
+            </div>
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">类型：</label>
+
+            <div class="col-sm-4">
+                <select multiple class="ui dropdown" name="dev_type">
+                      <option value="2">美女娱乐类</option>
+                      <option value="4">应用工具类</option>
+                      <option value="8">手机游戏类</option>
+                      <option value="1" selected>通用类</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+                <label for="" class="col-sm-2 control-label">广告素材</label><br>
+            <div class="col-sm-7" style="padding-left: 0px;  margin-top: -9px;">
+                <label style="margin-right: 10px"><input type="checkbox" id="" value="2" name="exemplar"> 插屏广告</label>
+                <label style="margin-right: 10px"><input type="checkbox" id="" value="4" name="exemplar"> 开屏广告</label>
+                <label style="margin-right: 10px"><input type="checkbox" id="" value="1" name="exemplar"> 广告条广告</label>
+                <label style="margin-right: 10px"><input type="checkbox" id="" value="8" name="exemplar"> 富媒体广告</label>
+                <label style="margin-right: 10px"><input type="checkbox" id="" value="16" name="exemplar"> 图标</label>
+                <label style="margin-right: 10px"><input type="checkbox" value="32" name="exemplar">推送</label>
+                <label style="margin-right: 10px"><input type="checkbox" value="128" name="exemplar">系统提示框</label>
+                <label style="margin-right: 10px"><input type="checkbox" value="256" name="exemplar">系统提示框（不带取消按钮）</label>
+                    </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">插屏素材</label>
+
+{#                <div class="iupload">#}
+{#                    <div class="img_rel" id="head_img_div0_show" style="display:none;">#}
+{#                        <img src="" class="img-rounded" style="width:150px; height: 150px"/>#}
+{#                        <input type="hidden" name="head_img0" value="" id="image_cp"/>#}
+{##}
+{#                        <div class="close">#}
+{#                            <img src="http://dl.nx5.com/js/close.png" style="width: 100%;">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div id="head_img_div0">上传文件</div>#}
+{#                </div>#}
+
+                <div class="col-sm-4">
+                    <input class="form-control span6" value="" name="image_cp" id="image_cp">
+                    <a href="{{ url_for('ad_plugin.source_select', id='image_cp') }}"
+                   class="btn-dialog btn btn-info btn-sm" w="1000" h="502">素材选择</a>
+                <a onclick="showPictures($('#image_cp').val())" class="btn btn-sm btn-info" target="_blank">点击查看</a>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">广告条素材</label>
+
+{#                <div class="iupload">#}
+{#                    <div class="img_rel" id="head_img_div1_show" style="display:none;">#}
+{#                        <img src="" class="img-rounded" style="width:150px; height: 150px"/>#}
+{#                        <input type="hidden" name="head_img1" value="" id="image_bn"/>#}
+{##}
+{#                        <div class="close">#}
+{#                            <img src="http://dl.nx5.com/js/close.png" style="width: 100%;">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div id="head_img_div1">上传文件</div>#}
+{#                </div>#}
+
+                <div class="col-sm-4">
+                    <input class="form-control span6" value="" name="image_bn" id="image_bn">
+                    <a href="{{ url_for('ad_plugin.source_select', id='image_bn') }}"
+                   class="btn-dialog btn btn-info btn-sm" w="1000" h="502">素材选择</a>
+                <a onclick="showPictures($('#image_bn').val())" class="btn btn-sm btn-info" target="_blank">点击查看</a>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">富媒体素材</label>
+
+{#                <div class="iupload">#}
+{#                    <div class="img_rel" id="head_img_div2_show" style="display:none;">#}
+{#                        <img src="" class="img-rounded" style="width:150px; height: 150px"/>#}
+{#                        <input type="hidden" name="head_img2" value="" id="image_md"/>#}
+{##}
+{#                        <div class="close">#}
+{#                            <img src="http://dl.nx5.com/js/close.png" style="width: 100%;">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div id="head_img_div2">上传文件</div>#}
+{#                </div>#}
+
+                <div class="col-sm-4">
+                    <input class="form-control span6" value="" name="image_md" id="image_md">
+                    <a href="{{ url_for('ad_plugin.source_select', id='image_md') }}"
+                   class="btn-dialog btn btn-info btn-sm" w="1000" h="502">素材选择</a>
+                <a onclick="showPictures($('#image_md').val())" class="btn btn-sm btn-info" target="_blank">点击查看</a>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">图标素材</label>
+
+{#                <div class="iupload">#}
+{#                    <div class="img_rel" id="head_img_div3_show" style="display:none;">#}
+{#                        <img src="" class="img-rounded" style="width:150px; height: 150px"/>#}
+{#                        <input type="hidden" name="head_img3" value="" id="image_logo"/>#}
+{##}
+{#                        <div class="close">#}
+{#                            <img src="http://dl.nx5.com/js/close.png" style="width: 100%;">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div id="head_img_div3">上传文件</div>#}
+{#                </div>#}
+
+                <div class="col-sm-4">
+                    <input class="form-control span6" value="" name="image_logo" id="image_logo">
+                    <a href="{{ url_for('ad_plugin.source_select', id='image_logo') }}"
+                   class="btn-dialog btn btn-info btn-sm" w="1000" h="502">素材选择</a>
+                <a onclick="showPictures($('#image_logo').val())" class="btn btn-sm btn-info" target="_blank">点击查看</a>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">开屏素材</label>
+
+{#                <div class="iupload">#}
+{#                    <div class="img_rel" id="head_img_div4_show" style="display:none;">#}
+{#                        <img src="" class="img-rounded" style="width:150px; height: 150px"/>#}
+{#                        <input type="hidden" name="head_img4" value="" id="image_kp"/>#}
+{##}
+{##}
+{#                        <div class="close">#}
+{#                            <img src="http://dl.nx5.com/js/close.png" style="width: 100%;">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div id="head_img_div4">上传文件</div>#}
+{#                </div>#}
+
+                <div class="col-sm-4">
+                    <input class="form-control span6" value="" name="image_kp" id="image_kp">
+                    <a href="{{ url_for('ad_plugin.source_select', id='image_kp') }}"
+                   class="btn-dialog btn btn-info btn-sm" w="1000" h="502">素材选择</a>
+                <a onclick="showPictures($('#image_kp').val())" class="btn btn-sm btn-info" target="_blank">点击查看</a>
+                </div>
+            </div>
+
+        <div class="form-group">
+                <label for="" class="col-sm-2 control-label">推送素材</label>
+
+{#                <div class="iupload">#}
+{#                    <div class="img_rel" id="head_img_div4_show" style="display:none;">#}
+{#                        <img src="" class="img-rounded" style="width:150px; height: 150px"/>#}
+{#                        <input type="hidden" name="head_img4" value="" id="image_kp"/>#}
+{##}
+{##}
+{#                        <div class="close">#}
+{#                            <img src="http://dl.nx5.com/js/close.png" style="width: 100%;">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div id="head_img_div4">上传文件</div>#}
+{#                </div>#}
+
+                <div class="col-sm-4">
+                    <input class="form-control span6" value="" name="image_ts" id="image_ts">
+                    <a href="{{ url_for('ad_plugin.source_select', id='image_ts') }}"
+                   class="btn-dialog btn btn-info btn-sm" w="1000" h="502">素材选择</a>
+                <a onclick="showPictures($('#image_ts').val())" class="btn btn-sm btn-info" target="_blank">点击查看</a>
+                </div>
+            </div>
+
+        <div class="form-group">
+                <label for="" class="col-sm-2 control-label">是否静默下载</label><br>
+                <input type="checkbox" class="chk_3" style="display: none; z-index: 0" id="checkbox_c1" checked value="1"
+                       name="auto_download"/><label for="checkbox_c1"></label>
+
+            </div>
+
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">状态：</label>
+            <input type="checkbox" class="chk_3" style="display: none" id="checkbox_c2"
+                   value=1 name="state"/><label for="checkbox_c2"></label>
+        </div>
+
+
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class=flashes>
+                        {% for message in messages %}
+                            {% if message == '添加成功' %}
+                                <div class="alert alert-success">{{ message }}</div>
+                            {% else %}
+                                <div class="alert alert-error">{{ message }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+
+            <div class="form-group">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-7">
+                    <h3 style="color: red">{{ result }}</h3>
+                    <input type="button" style="margin-right: 10px" class="btn btn-primary btn-lg" id="check"
+                           value="检 测" onclick="judge_info()">
+                    <input type="submit" id="submit" class="btn btn-primary btn-lg disabled" value="添 加"></div>
+            </div>
+        </div>
+
+
+        <div class="bs-example-bg-classes" style="display:{{ step2 }}" hidden>
+            <p class="bg-success">
+                <br><em> <span style="font-size: 20px;font-weight: bold"> {{ productname }} </span> 广告添加成功</em>
+                <a class="btn btn-primary" href="{{ url_for('ad_plugin.ad_add') }}" type="submit">继续添加广告</a>
+                <a class="btn btn-primary" href="{{ url_for('ad_plugin.ad_list') }}" type="submit">返回广告列表</a>
+        </div>
+        </div>
+
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+
+    {{ super() }}
+    <script>
+        jQuery(function ($) {
+            $('input[type="checkbox"]').onoff();
+        });
+    </script>
+{#    <script src="http://static.wauee.com/base/jquery/jquery-1.7.2.min.js"></script>#}
+    <script src="http://static.wauee.com/base/jquery/jquery.form.js"></script>
+
+    <script src="http://static.wauee.com/base/bootstrap/2.32/js/bootstrap.min.js"></script>
+
+    <script src="http://static.wauee.com/base/jquery/jquery.uploadfile.js?v-1004"></script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var settings = {
+                url: "/upload",
+                method: "POST",
+                formData: {'project': 'zmimg', 'is_rename': '1'},
+                allowedTypes: "png,jpg,jpeg,gif",
+                fileName: "upload_file",
+                extErrorStr: "被禁止, 可上传的文件格式是:",
+                sizeErrorStr: "尺寸太大, 允许最大的尺寸是:",
+                uploadErrorStr: "上传出错",
+                multiple: true,
+                maxFileSize: 47185920,
+                filenameErrorStr: "文件名不合法, 请使用字母,数字,点,下划线,中划线来命名",
+                validateFileName: true,
+                uploadButtonClass: 'btn btn-default',
+                dragDropStr: "",
+                dragdropWidth: '100%',
+                statusBarWidth: '100%',
+                fileCounterStyle: "",
+                cancelStr: "停止",
+                abortStr: "中断",
+                doneStr: "完成",
+                showDelete: false,
+                showDone: false,
+                showAbort: false,
+                returnType: 'json',
+                customErrorKeyStr: "error",
+                btnerrorClass: "btn btn-danger btn-sm fl",
+                btnsuccessClass: "btn btn-success btn-sm fl",
+                downloadStr: "下载",
+                onSuccess: function (files, data, xhr, obj) {
+                    $('.ajax-file-upload-statusbar').fadeOut();
+                    if (data.status) {
+                        sdom = $('#' + obj.attr('id') + "_show");
+                        obj.dd.hide();
+                        sdom.children('img.img-rounded').attr('src', data.obj.url);
+                        sdom.children("input[type='hidden']").val(data.obj.url);
+                        sdom.show();
+                    }
+                },
+                onError: function (files, status, errMsg) {
+                    // showTips('danger', "上传失败");
+                }
+            };
+            $("#head_img_div0").uploadFile(settings);
+            $("#head_img_div1").uploadFile(settings);
+            $("#head_img_div2").uploadFile(settings);
+            $("#head_img_div3").uploadFile(settings);
+            $("#head_img_div4").uploadFile(settings);
+
+
+        });
+
+        $('div.img_rel > div.close').click(function () {
+            $(this).siblings('img.img-rounded').attr('src', '');
+            $(this).siblings("input[type='hidden']").val('');
+            $(this).parent().siblings('div.well').show();
+            $(this).parent().hide();
+
+        });
+    </script>
+
+    <script>
+        function judge_link(obj) {
+            var link = $(obj).parent().parent().find('input').val();
+            var button = $(obj).parent().parent().find('button');
+            var data = {
+                'link': link
+            };
+            x = $.ajax({
+                type: "POST",
+                async: false,
+                traditional: true,
+                data: data,
+                url: "{{ url_for('ad_plugin.judge_link') }}",
+                success: function (ret) {
+                    if (ret) {
+                        $(button).addClass('hide');
+                        return '2'
+                    }
+                    else {
+                        $(button).removeClass('hide');
+                        return '0'
+                    }
+                }
+            });
+            return x.responseText;
+        }
+
+        function judge_info(e) {
+            var target = $("input[name=target]");
+            var target_logo = $("input[name=target_logo]");
+            var state = judge_link(target);
+
+            //判断有无短链接
+            if (target_logo.val() != '') {
+                state = judge_link(target_logo) && state;
+            }
+
+            //判断包名
+            var target_type = $("[name=target_type]").val();
+            if (target_type == '2') {
+                if ($('[name=packname]').val() == '') {
+                    $('#packname').removeClass('hide');
+                    state = false
+                }
+                else {
+                    $('#packname').addClass('hide')
+                }
+            }
+            else {
+                $('#packname').addClass('hide')
+            }
+
+            if (state == true) {
+                $('#check').removeClass('btn-primary btn-success btn-danger');
+                $('#check').addClass('btn-success');
+                $('#submit').removeClass('disabled')
+            }
+            else {
+                $('#check').removeClass('btn-primary btn-success btn-danger');
+                $('#check').addClass('btn-danger');
+                $('#submit').addClass('disabled')
+            }
+        }
+    </script>
+
+    <script>
+        function selectImgCallBack(url, id) {
+            $('#' + id).val(url);
+        }
+
+        function showPictures(id) {
+            var data = {
+                'id': id
+            };
+            if (id.substr(0,4)=='http'){
+                url = id.split('|');
+                for (var i = 0; i < url.length; i++) {
+                            window.open(url[i]);
+                        }
+            }
+            else{
+                $.ajax({
+                type: "GET",
+                async: true,
+                traditional: true,
+                data: data,
+                url: "{{ url_for('ad_plugin.img_url') }}",
+                success: function (ret) {
+                    if (ret) {
+                        url = JSON.parse(ret).url;
+                        url = url.split('|');
+                        for (var i = 0; i < url.length; i++) {
+                            window.open(url[i]);
+                        }
+                    }
+                }
+            });
+            }
+        }
+    </script>
+{% endblock %}

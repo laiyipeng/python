@@ -1,0 +1,269 @@
+{% extends "plugin/layout.html" %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="/static/css/checkbox.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('channel') }}
+{% endblock %}
+
+
+{% block container %}
+    <h3 class="ui horizontal divider header"> 开发者 </h3>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                    {% if message in ('添加成功', '更改成功！') %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% else %}
+                        <div class="alert alert-error">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+
+    <form method="post" style="float: right" class="form-inline">
+        <div class="ui labeled input mini">
+            <select name="dev_type" class="ui compact selection dropdown">
+                {% for k,v in dev_type_list.items() %}
+                    <option value="{{ k }}" {% if dev_type == k|string %}selected{% endif %}>{{ v }}</option>
+                {% endfor %}
+            </select>
+            <input placeholder="开发者" value="" style="width: 150px" name="dev" required="">
+
+            <input type="submit" class="ui button mini primary" value="新增">
+        </div>
+
+    </form>
+
+    <form class=" form-inline well-form" style="padding-left:5px">
+        <label>渠道号：</label>
+        <input name="channel" type="text" class="input-dev" placeholder="请输入渠道号" value="{{ channel }}">
+        <input name="user_id" type="text" class="input-dev" placeholder="请输入用户id" value="{{ user_id }}">
+        <input name="dev" type="text" class="input-dev" placeholder="请输入用户名" value="{{ dev }}">
+        <input name="app_id" type="text" class="input-dev" placeholder="请输入app_id" value="{{ app_id }}">
+        <select name="crm_id" style="width: 100px">
+            <option value="">媒介</option>
+            {% for k,v in crm_list.items() %}
+                <option value="{{ k }}" {% if k|string==crm_id %}selected{% endif %}>{{ v }}</option>
+            {% endfor %}
+        </select>
+        <select name="dev_type">
+            <option value="">类型</option>
+            {% for k,v in dev_type_list.items() %}
+                <option value="{{ k }}" {% if dev_type == k|string %}selected{% endif %}>{{ v }}</option>
+            {% endfor %}
+        </select>
+        <select name="order">
+            <option value="">排序</option>
+            <option {% if order == 'id' %}selected{% endif %} value="id">时间</option>
+            <option {% if order == 'active_new' %}selected{% endif %} value="active_new">新增</option>
+        </select>
+        <button type="submit" class="ui button mini blue" value="">查询</button>
+    </form>
+
+    <table class="table ui grey sortable selectable" id="table">
+        <thead style="">
+        <tr>
+            <th>ID</th>
+            <th data-table-sortable-type="string">开发者</th>
+            <th>应用id</th>
+            <th>渠道号</th>
+            <th>广告启动时间（分）</th>
+            <th>实时新增</th>
+            <th>类型</th>
+            <th>操作</th>
+            <th>广告开关</th>
+            <th>审核状态</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% if query %}
+            {% for item in query %}
+                <tr id="{{ item.id }}" {% if item.state == 0 %}style="color: #4cae4c"{% endif %}>
+                    <td>{{ item.id }}</td>
+                    <td><input i="{{ item.id }}" style="width: 150px" onchange="change_time(this)" d="1"
+                               value="{{ item.dev }}"></td>
+                    <td>{{ item.app_id }}</td>
+                    <td>{{ item.channel }}</td>
+
+                    <td><input i="{{ item.id }}" style="width: 40px" onchange="change_time(this)"
+                               value="{{ item.ad_launch_time }}"></td>
+                    <td>{{ item.active_new }}</td>
+                    <td style="position: relative"><label class="label ui most-mini teal"
+                                                          onclick="$('#type{{ item.id }}').toggle()">{{ item.type|dev_type_filter }}</label>
+                        <a class="ui pointing basic label" id="type{{ item.id }}"
+                           style="position: absolute;left: -110px;top: 28px;z-index: 1;display: none">
+                            <button class="ui label teal most-mini" onclick="change_dev_type({{ item.id }}, 0)">通用类
+                            </button>
+                            <button class="ui label teal most-mini" onclick="change_dev_type({{ item.id }}, 1)">美女娱乐类
+                            </button>
+                            <button class="ui label teal most-mini" onclick="change_dev_type({{ item.id }}, 2)">应用工具类
+                            </button>
+                            <button class="ui label teal most-mini" onclick="change_dev_type({{ item.id }}, 3)">手机游戏类
+                            </button>
+                        </a></td>
+                    <td class="ui">
+                        <div class="label ui"><a
+                                href="{{ url_for('ad_plugin.white_list', app_id=item.app_id, channel=item.channel, type=1) }}">白名单</a>
+                        </div>
+                        <div class="label ui"><a
+                                href="{{ url_for('ad_plugin.white_list', app_id=item.app_id, channel=item.channel, type=2) }}">黑名单</a>
+                        </div>
+                        <div class="label ui"><a
+                                href="{{ url_for('ad_plugin.dev_plan', channel=item.channel, plan_id=item.plan_id) }}">投放计划</a>
+                        </div>
+                        <div class="label ui"><a href="{{ url_for('ad_plugin.dev_edit', channel=item.channel) }}">其他</a>
+                        </div>
+                        {#                        <div class="label ui"><a href="javascript: post({{ item.channel }})">删除</a></div>#}
+                    </td>
+                    <td><input type="checkbox" class="chk_3" style="" c="{{ item.channel }}" id="{{ item.channel }}"
+                               {% if item.switch == 1 %}checked{% endif %} value="1" name="running_state"
+                               onclick="changeRunning_state(this)"/><label for="{{ item.channel }}"></label></td>
+                    <td><input type="checkbox" class="chk_3" style="" s="1" c="{{ item.channel }}"
+                               id="s{{ item.channel }}"
+                               {% if item.state == 1 %}checked{% endif %} value="1" name="running_state"
+                               onclick="changeRunning_state(this)"/><label for="s{{ item.channel }}"></label></td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+
+
+    {% from "common/element.html" import render_pagination with context %}
+    {{ render_pagination() }}
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var dev = $("[name ='dev']").val();
+
+        function post(channel) {
+            var data = {
+                'channel': channel
+            };
+            if (confirm('确认删除？')) {
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    traditional: true,
+                    data: data,
+                    url: "{{ url_for('ad_plugin.channel_delete') }}",
+                    success: function (ret) {
+                        if (ret) {
+                            location.reload();
+                            alert('删除成功');
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+
+    <script>
+        function change_dev_type(id, dev_type) {
+            var data = {
+                'id': id,
+                'dev_type': dev_type
+            };
+            if (confirm('确认更改？')) {
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    traditional: true,
+                    data: data,
+                    url: "{{ url_for('ad_plugin.edit_dev_type') }}",
+                    success: function (ret) {
+                        if (ret) {
+                            location.reload();
+                            alert('更改成功！');
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+
+    <script>
+        function changeRunning_state(obj) {
+            if (confirm('确认更改？')) {
+                var state = $(obj).is(':checked');
+                var channel = $(obj).attr('c');
+                var s = $(obj).attr('s');
+
+                if (state == true) {
+                    running_state = 1
+                }
+                else {
+                    running_state = 0
+                }
+                data = {
+                    'channel': channel,
+                    'running_state': running_state,
+                    's': s
+                };
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    traditional: true,
+                    data: data,
+                    url: "{{ url_for('ad_plugin.running_state') }}",
+                    success: function (ret) {
+                        status = JSON.parse(ret).status;
+                        if (status == 200) {
+                            alert('更改成功');
+                        }
+                        else {
+                            alert('更改失败')
+                        }
+                    }
+                })
+            }
+        }
+
+        function change_time(obj) {
+            if (confirm('确认更改？')) {
+                var time = $(obj).val();
+                var id = $(obj).attr('i');
+                var d = $(obj).attr('d');
+                var s = $(obj).attr('s');
+                var data = {
+                    'id': id,
+                    'time': time,
+                    'd': d,
+                    's': s
+                };
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    traditional: true,
+                    data: data,
+                    url: "{{ url_for('ad_plugin.change_adTime') }}",
+                    success: function (ret) {
+                        status = JSON.parse(ret).status;
+                        if (status == 200) {
+                            alert('更改成功');
+                        }
+                        else if (status == 601) {
+                            alert('名称已存在');
+                        }
+                        else {
+                            alert('更改失败');
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+{% endblock %}

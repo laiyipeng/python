@@ -1,0 +1,62 @@
+{% macro sidebar_nav(nav) %}
+    {% if nav in ('ad_data', 'dev_data', 'zmns_data', 'action_data', 'sdk', 'data_warning') %}
+        <div class="well sidebar-nav" style="margin-top: 30px">
+            <ul class="nav nav-list">
+                <li class="nav-header">数据查看</li>
+                <li><a href="{{ url_for('ad_plugin.ad_data') }}" {% if nav == 'ad_data' %} class="active"{% endif %}>产品数据</a>
+                </li>
+                <li><a href="{{ url_for('ad_plugin.data') }}"
+                       {% if nav == 'dev_data' %}class="active"{% endif %}>广告数据</a></li>
+                <li><a href="{{ url_for('ad_plugin.zmns_data') }}"
+                       {% if nav == 'zmns_data' %}class="active"{% endif %}>统一广告数据</a></li>
+                <li><a href="{{ url_for('ad_plugin.action_data') }}"
+                       {% if nav == 'action_data' %}class="active"{% endif %}>用户行为数据</a></li>
+                <li><a href="{{ url_for('ad_plugin.sdk') }}" {% if nav == 'sdk' %}class="active"{% endif %}>sdk数据</a>
+                </li>
+                <li><a href="{{ url_for('ad_plugin.data_warning') }}"
+                       {% if nav == 'data_warning' %}class="active"{% endif %}>数据预警</a></li>
+            </ul>
+        </div>
+
+    {% elif nav in ('list', 'ad_add', 'push_group') %}
+        <div class="well sidebar-nav" style="margin-top: 30px">
+            <ul class="nav nav-list">
+                <li class="nav-header">产品</li>
+                <li><a href="{{ url_for('ad_plugin.ad_list') }}" {% if nav == 'list' %}class="active"{% endif %}>广告</a>
+                </li>
+                <li><a href="{{ url_for('ad_plugin.ad_add') }}" {% if nav == 'ad_add' %}class="active"{% endif %}>新增</a>
+                </li>
+                <li><a href="{{ url_for('ad_plugin.push_group') }}"
+                       {% if nav == 'push_group' %}class="active"{% endif %}>强制推送组</a></li>
+            </ul>
+        </div>
+
+    {% elif nav in ('clearing', 'ad_clearing', 'ad_result') %}
+        <div class="well sidebar-nav" style="margin-top: 30px">
+            <ul class="nav nav-list">
+                <li class="nav-header">结算</li>
+                <li><a href="{{ url_for('ad_plugin.clearing') }}" {% if nav == 'clearing' %}class="active"{% endif %}>结算预览</a>
+                </li>
+                <li><a href="{{ url_for('ad_plugin.ad_clearing') }}"
+                       {% if nav == 'ad_clearing' %}class="active"{% endif %}>广告结算预览</a></li>
+                <li><a href="{{ url_for('ad_plugin.ad_result') }}" {% if nav == 'ad_result' %}class="active"{% endif %}>广告效果</a>
+                </li>
+            </ul>
+        </div>
+
+    {% elif nav in ('config', 'download', 'test', 'op_record') %}
+        <div class="well sidebar-nav" style="margin-top: 30px">
+            <ul class="nav nav-list">
+                <li class="nav-header">其他</li>
+                <li><a href="{{ url_for('ad_plugin.config') }}" {% if nav == 'config' %}class="active"{% endif %}>配置</a>
+                </li>
+                <li><a href="{{ url_for('ad_plugin.jar_download') }}"
+                       {% if nav == 'download' %}class="active"{% endif %}>sdk下载</a></li>
+                <li><a href="{{ url_for('ad_plugin.sdk_test') }}"
+                       {% if nav == 'test' %}class="active"{% endif %}>测试入口</a></li>
+                <li><a href="{{ url_for('ad_plugin.op_record') }}" {% if nav == 'op_record' %}class="active"{% endif %}>操作记录</a>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+{% endmacro %}

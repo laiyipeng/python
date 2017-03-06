@@ -1,0 +1,88 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('action_data') }}
+{% endblock %}
+
+{% block content %}
+    <h3 class="ui horizontal divider header"><i class="circular icon table"></i> 行为数据 </h3>
+    <form class="well form-inline well-form" action="" method="get">
+        <input name="channel" type="text" class="span2" placeholder="渠道号搜索" value="{{ channel }}"/>
+        <input type="text" id="dateHidden1" name="sdate" placeholder="开始日期" value="{{ sdate }}"
+               onclick="WdatePicker({el:'dateHidden1',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+               src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+        <input type="text" id="dateHidden2" name="edate" placeholder="结束日期" value="{{ edate }}"
+               onclick="WdatePicker({el:'dateHidden2',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+               src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+        <button type="submit" class="ui button mini blue" value="">查询</button>
+
+        <span style="margin-left: 20px" class="ui buttons mini">
+        <button class="blue button ui inverted" name="day" value='-1'><i class="left chevron icon"></i>上一天</button>
+        <div class="or"></div>
+        <button class="green button ui inverted" name="day" value='1'>下一天<i class="right chevron icon"></i></button>
+        </span>
+
+        <button type="button" class="btn btn-info" style="float: right" onclick="$('#edit').toggle('normal')">编辑时长
+        </button>
+        <span id="edit" hidden="" style="float: right">
+            <input type="text" style=" width: 30px" name="duration1" value="{{ duration1|int }}"/>
+            <input type="text" style=" width: 30px" name="duration2" value="{{ duration2|int }}"/>
+            <input type="text" style=" width: 30px" name="duration3" value="{{ duration3|int }}"/>
+            <input type="text" style=" width: 30px" name="duration4" value="{{ duration4|int }}"/>
+            <input type="text" style=" width: 30px" name="duration5" value="{{ duration5|int }}"/>
+        </span>
+    </form>
+    <table class="table" id="table" style="margin-bottom: 20px; width: 100%">
+        <thead>
+        <tr>
+            <th data-table-sortable-type="string">开发者</th>
+            <th>渠道号</th>
+            <th>总个数</th>
+            <th>sdk新增</th>
+            <th>出广告用户</th>
+            <th>时长>{{ duration1 }}s</th>
+            <th>时长>{{ duration2 }}s</th>
+            <th>时长>{{ duration3 }}s</th>
+            <th>时长>{{ duration4 }}s</th>
+            <th>时长>{{ duration5 }}s</th>
+            <th data-table-sortable-type="date">日期</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form method="post">
+            {% if query %}
+                {% for item in query %}
+                    <tr>
+                        <td><a title="{{ item.dev_id }}">{{ item.dev }}</a></td>
+                        <td>{{ item.channel }}</td>
+                        <td><span class="red">{{ item.c0 }}</span>个</td>
+                        <td>{{ item.active_new }}</td>
+                        <td>{{ item.user_showad if item.user_showad else 0 }}</td>
+                        <td><span class="red">{{ item.c1 }}</span>个
+                            <div><span class="red">{{ (item.c1/item.c0*100)|round(2) }}%</span></div>
+                        </td>
+                        <td><span class="red">{{ item.c2 }}</span>个
+                            <div><span class="red">{{ (item.c2/item.c0*100)|round(2) }}%</span></div>
+                        </td>
+                        <td><span class="red">{{ item.c3 }}</span>个
+                            <div><span class="red">{{ (item.c3/item.c0*100)|round(2) }}%</span></div>
+                        </td>
+                        <td><span class="red">{{ item.c4 }}</span>个
+                            <div><span class="red">{{ (item.c4/item.c0*100)|round(2) }}%</span></div>
+                        </td>
+                        <td><span class="red">{{ item.c5 }}</span>个
+                            <div><span class="red">{{ (item.c5/item.c0*100)|round(2) }}%</span></div>
+                        </td>
+                        <td>{{ item.time }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </form>
+        </tbody>
+    </table>
+    {% from "common/element.html" import render_pagination with context %}
+    {{ render_pagination() }}
+    {#                        <h4><strong>总计：</strong></h4>#}
+    {#                    <strong>sdk新增激活用户：</strong><strong class="right-50px">{{ total }}</strong>#}
+{% endblock %}

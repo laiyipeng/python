@@ -1,0 +1,262 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('clearing') }}
+{% endblock %}
+
+
+{% block content %}
+
+    <form class="well form-inline well-form" style="margin-top: 50px; margin-bottom: 50px">
+        <div>
+            <input name="channel" type="text" class="span2" placeholder="渠道号" value="{{ dict_args.channel }}"/>
+            <input name="user_id" type="text" class="span2" placeholder="用户id" value="{{ dict_args.user_id }}"/>
+            <select name="crm_id" style="width: 100px">
+                <option value="">媒介</option>
+                {% for k,v in crm_list.items() %}
+                    <option value="{{ k }}" {% if k|string==dict_args.crm_id %}selected{% endif %}>{{ v }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" id="dateHidden1" name="sdate" placeholder="开始日期" value="{{ dict_args.sdate }}"
+                   onclick="WdatePicker({el:'dateHidden1',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+                   src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+            <input type="text" id="dateHidden2" name="edate" placeholder="结束日期" value="{{ dict_args.edate }}"
+                   onclick="WdatePicker({el:'dateHidden2',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+                   src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+            <label for="no_install" style="padding: 0 10px;">
+                <span>0安装</span>
+                <input type="checkbox" id="no_install" name="no_install" value="true"
+                       {% if dict_args.no_install %}checked{% endif %}
+                       style="position: relative; top: -3px;">
+            </label>
+            <button type="submit" class="ui button mini blue" value="">查询</button>
+            <button type="button" class="ui button teal mini" onclick="pushCRM(this)"
+                    style="margin-right: 20px; margin-bottom: 20px; float: right">导入crm
+            </button>
+
+            <span style="margin-left: 20px" class="ui buttons mini">
+        <button class="blue button ui inverted" name="day" value='-1'><i class="left chevron icon"></i>上一天</button>
+        <div class="or"></div>
+        <button class="green button ui inverted" name="day" value='1'>下一天<i class="right chevron icon"></i></button>
+        </span>
+        </div>
+    </form>
+
+
+    <table class="table" id="table" style="margin-bottom: 50px">
+        <caption style="text-align: center; font-size: 16px">
+            <p class="large ui label pointing below " style="padding-right:30px;">
+                {#                sdk新增：{{ sum_user|int }}#}
+                {#                安装数：{{ sum_install|int }}#}
+                {#                安装ARPU值：{{ arpu|round(4) }}#}
+                {#                总支出：{{ sum_install_price|round(3) }}#}
+                {#                总收入：{{ sum_earning|round(3) }}#}
+                收入：{{ adm_earnings|round(2) }}，
+                sdk新增：{{ sum_list.active_new|int }}，
+                安装数：{{ sum_list.install|int }}，
+                有效安装数：{{ sum_list.install_sim|int }}，
+                有效激活数：{{ sum_list.active_sim|int }}，
+                安装ARPU值：{{ sum_list.arpu_install|round(4) }}，
+                激活ARPU值：{{ (sum_list.income / sum_list.active_sim * 0.8 if sum_list.active_sim else 0)|round(4) }}，
+                <br>
+                <br>
+                总支出：{{ sum_list.payment|round(3) }}，
+                总收入：{{ sum_list.income|round(3) }}，
+                有卡新增：{{ sum_list.sdk_active_sim|int }}，
+                出广告新增：{{ sum_list.active_showad|int }}
+            </p>
+            <form method="post" style="display: inline-block; margin: 0; float: right;">
+                <div style="float: right" class="ui form">
+                    <label style="margin-left: 10px">总收入：</label>
+                    <input name="earnings" type="text" class="span2" style="width: 100px" placeholder="总收入"
+                           value="{{ sum_list.income|round(3) }}"><strong style="margin-right: 10px">元</strong>
+                    <button type="submit" class="ui button tiny" value='' style="margin-right: 20px">保存</button>
+                </div>
+            </form>
+        </caption>
+
+        <thead>
+        <tr>
+            <th data-table-sortable-type="date">日期</th>
+            <th data-table-sortable-type="string">开发者</th>
+            <th>渠道号</th>
+            <th>sdk
+                <div>新增</div>
+            </th>
+            <th>有卡
+                <div>新增</div>
+            </th>
+            <th>出广告
+                <div>新增</div>
+            </th>
+            <th>安装</th>
+            <th>有效
+                <div>安装</div>
+            </th>
+            <th>有效
+                <div>激活</div>
+            </th>
+            <th>安装
+                <div>预算</div>
+            </th>
+            <th>预返
+                <div>金额</div>
+            </th>
+            <th>预返
+                <div>个数</div>
+            </th>
+            {#            <th>安装ARPU值</th>#}
+            <th>预返
+                <div>安装</div>
+                <div>arpu值</div>
+            </th>
+            <th>预返sdk
+                <div>新增</div>
+                <div>arpu值</div>
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% if query %}
+            {% for item in query %}
+                <tr>
+                    <td>{{ (item.time|string)[5:] }}</td>
+                    <td><a title="{{ item.dev_id }}"> {{ item.dev }}</a></td>
+                    <td>{{ item.channel }}</td>
+                    <td>{{ item.active_new2 }}</td>
+                    <td>{{ item.sdk_active_sim if item.sdk_active_sim else 0 }}</td>
+                    <td>{{ item.active_showad if item.active_showad else 0 }}</td>
+                    <td><a w="400" h="400"
+                           href="{{ url_for('ad_plugin.clearing_detail', channel = item.channel, time = item.time, install_price = install_price) }}"
+                           target="_blank">{{ item.install }}</a></td>
+                    <td>{{ item.install_sim }}</td>
+                    <td>{{ item.active_sim }}</td>
+                    <td>{{ item.earnings_install|round(2) }}</td>
+                    <td><input id="{{ item.id }}" name="{{ item.time }}{{ item.channel }}"
+                               value="{{ item.earnings_pre }}" style="width: 60px"></td>
+                    <td>{{ (item.earnings_pre|float / 0.8)|round(0) }}</td>
+                    {#                    <td>{{ item.arpu_install|round(3) }}</td>#}
+                    <td>{{ item.real_arpu_install|round(2) }}</td>
+                    <td>
+                        <a href="{{ url_for('ad_plugin.arpu_active_new_details', channel=item.channel, date=item.time) }}"
+                           target="_blank">
+                            {{ item.real_arpu_active_new|round(2) }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if not item.state %}
+                            <button class="ui label mini" type="button" onclick="post(this)" i="{{ item.id }}">保存
+                            </button>
+                        {% else %}
+                            <button class="ui label mini green" type="button">已上传</button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        {#        <tr>#}
+        {#            <td colspan="12"><a style="cursor: pointer" onclick="$(this).hide(); $('.query2').show()">点击加载更多...</a></td>#}
+        {#        </tr>#}
+        {##}
+        {#        {% if query2 %}#}
+        {#            {% for item in query2 %}#}
+        {#                <tr class="query2" hidden="">#}
+        {#                    <td>{{ item.time }}</td>#}
+        {#                    <td><a title="{{ item.dev_id }}"> {{ item.dev }}</a></td>#}
+        {#                    <td>{{ item.channel }}</td>#}
+        {#                    <td>{{ item.active_new2 }}</td>#}
+        {#                    <td>{{ item.active_sim }}</td>#}
+        {#                    <td>{{ item.active_showad }}</td>#}
+        {#                    <td><a href="{{ url_for('ad_plugin.clearing_detail', channel = item.channel, time = item.time) }}"#}
+        {#                           target="_blank">{{ item.install }}</a></td>#}
+        {#                    <td>{{ item.install_sim }}</td>#}
+        {#                    <td>{{ item.earnings_install }}</td>#}
+        {#                    <td><input id="{{ item.id }}" name="{{ item.time }}{{ item.channel }}"#}
+        {#                               value="{{ item.earnings_pre }}" style="width: 60px"></td>#}
+        {#                    <td>{{ (item.earnings_pre|float / 0.8)|round(0) }}</td>#}
+        {#                    <td>{{ item.arpu_install|round(3) }}</td>#}
+        {#                    <td>{{ item.real_arpu_install|round(3) }}</td>#}
+        {#                    <td>#}
+        {#                        <a href="{{ url_for('ad_plugin.arpu_active_new_details', channel=item.channel, date=item.time) }}"#}
+        {#                           target="_blank">#}
+        {#                            {{ item.real_arpu_active_new|round(3) }}#}
+        {#                        </a>#}
+        {#                    </td>#}
+        {#                    <td>#}
+        {#                        {% if not item.state %}#}
+        {#                            <button class="ui label mini" type="button" onclick="post(this)" i="{{ item.id }}">保存#}
+        {#                            </button>#}
+        {#                        {% else %}#}
+        {#                            <button class="ui label mini green" type="button">已上传</button>#}
+        {#                        {% endif %}#}
+        {#                    </td>#}
+        {#                </tr>#}
+        {#            {% endfor %}#}
+        {#        {% endif %}#}
+        </tbody>
+    </table>
+    {% from "common/element.html" import render_pagination with context %}
+    {{ render_pagination() }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function post(obj) {
+            var id = $(obj).attr('i');
+            var pre = $('#' + id).val();
+            var data = {
+                'id': id,
+                'pre': pre
+            };
+            console.log(data);
+            $.ajax({
+                type: "POST",
+                async: true,
+                traditional: true,
+                data: data,
+                url: "{{ url_for('ad_plugin.pre_post') }}",
+                success: function (ret) {
+                    if (ret) {
+                        {#                location.reload();#}
+                        alert('保存成功');
+                        {#                $('#'+id).remove();#}
+                    }
+                    else {
+                        alert('保存失败');
+                    }
+                }
+            })
+        }
+
+        function pushCRM(obj) {
+            var sdate = $('#dateHidden1').val();
+            var edate = $('#dateHidden2').val();
+            var data = {
+                'sdate': sdate,
+                'edate': edate
+            };
+            $.ajax({
+                type: "POST",
+                async: true,
+                traditional: true,
+                data: data,
+                url: "{{ url_for('ad_plugin.push_crm') }}",
+                success: function (ret) {
+                    if (ret) {
+                        {#                location.reload();#}
+                        alert('导入crm成功');
+                        {#                $('#'+id).remove();#}
+                    }
+                    else {
+                        alert('导入失败');
+                    }
+                    $(obj).removeClass('loading disabled');
+                }
+            })
+        }
+    </script>
+{% endblock %}

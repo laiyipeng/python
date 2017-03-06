@@ -1,0 +1,95 @@
+{% extends "plugin/layout.html" %}
+{% block title %}强制推送广告表{% endblock %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('push_group') }}
+{% endblock %}
+
+{% block content %}
+
+    <section>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        {% if message == '添加成功' %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% else %}
+                            <div class="alert alert-error">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <div class="page-header head-green">
+            <h3><i class="icon ui group circular"></i>强制推送组</h3>
+        </div>
+        <form class="well form-inline well-form" action="" method="post">
+        <div class="field">
+            <select name="ad_id"  class="ui search dropdown small" style="width: 200px">
+                {% if ad_list %}
+                    {% for item in ad_list %}
+                        <option value="{{ item.id }}">{{ item.title }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+            <button type="submit" class="ui button mini blue" value="">添加</button>
+        </div>
+        </form>
+
+        <table class="table" style="width: 50%">
+            <thead>
+            <tr>
+                <th>组</th>
+                <th data-table-sortable-type="string">广告名</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% if list %}
+                {% for item in list %}
+                    <tr id="{{ item.ad_id }}">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.title }}</td>
+                        <td><a style="margin-right: 10px" href="javascript: post({{ item.ad_id }})">删除</a><a
+                                href="{{ url_for('ad_plugin.ad_edit', id = item.ad_id) }}">编辑</a></td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+
+
+        <div>
+
+        </div>
+
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function post(id) {
+            var data = {
+                id: id
+            };
+            $.ajax({
+                type: "POST",
+                async: true,
+                traditional: true,
+                data: data,
+                url: "{{ url_for('ad_plugin.push_group_del') }}",
+                success: function (ret) {
+                    if (ret) {
+                        {#                location.reload();#}
+                        alert('删除成功');
+                        $('#' + id).remove();
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}

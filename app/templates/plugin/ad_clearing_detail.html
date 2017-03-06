@@ -1,0 +1,63 @@
+{% extends "plugin/layout.html" %}
+
+{% from "common/element.html" import render_pagination with context %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('data') }}
+{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="page-header head-green">
+            <h3>广告安装明细</h3>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table" id="table" style="margin-bottom: 400px; width: 80%">
+                <caption style="text-align: center;">
+                    <p class="large ui label" style="padding-right:30px;">
+                        总安装：{{ sum_install }}，
+                        总有效安装：{{ sum_valid_install }}
+                    </p>
+                </caption>
+                <thead>
+                <tr>
+                    <th data-table-sortable-type="string">开发者</th>
+                    <th data-table-sortable-type="string">开发者类型</th>
+                    <th>渠道号</th>
+                    <th>广告ID</th>
+                    <th>广告名称</th>
+                    <th>广告类型</th>
+                    <th>sdk新增</th>
+                    <th>安装数</th>
+                    <th>有效安装</th>
+                    <th>安装占比</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% if query %}
+                    {% for item in query %}
+                        <tr>
+                            <td>{{ item.dev }}</td>
+                            <td>
+                                <lable class="ui label green most-mini">{{ item.type|dev_type_filter }}</lable>
+                            </td>
+                            <td>{{ item.channel }}</td>
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.adv_type|ad_type_filter }}</td>
+                            <td>{{ item.active_new }}</td>
+                            <td>{{ item.install }}</td>
+                            <td>{{ item.valid_install }}</td>
+                            <td>{{ ((item.install / sum_install * 100) if sum_install else 0)|round(2) }}%</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+{% endblock %}

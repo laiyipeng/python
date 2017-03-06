@@ -1,0 +1,160 @@
+{% extends "plugin/layout.html" %}
+{% block title %}广告列表{% endblock %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('list') }}
+{% endblock %}
+
+{% block content %}
+    <section>
+    {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        {% if message == '修改成功' %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% else %}
+                            <div class="alert alert-error">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+
+    <form class="well form-inline well-form" style="margin-top: 50px; margin-bottom: 50px">
+        <div>
+            <input name="ad_id" type="text" class="span1" placeholder="ID" value="{{ ad_id }}"/>
+            <input name="ad_name" type="text" class="span2" placeholder="广告名" value="{{ ad_name }}"/>
+            <input name="w_title" type="text" class="span2" placeholder="分发名" value="{{ w_title }}"/>
+            <select name="ad_type" style="width: 150px">
+                <option value="">广告形式</option>
+                {% for k, v in ad_type_dict.items() %}
+                    <option value="{{ k }}" {% if ad_type == k|string %}selected{% endif %}>{{ v }}</option>
+                {% endfor %}
+            </select>
+            <select name="dev_type">
+                <option value="">类型</option>
+                {% for k,v in dev_type_list.items() %}
+                    <option value="{{ k }}" {% if dev_type == k|string %}selected{% endif %}>{{ v }}</option>
+                {% endfor %}
+            </select>
+            <select name="state" style="width: 100px">
+                <option value="">审核状态</option>
+                <option value=0 {% if state == '0' %}selected{% endif %}>审核中</option>
+                <option value=1 {% if state == '1' %}selected{% endif %}>审核通过</option>
+            </select>
+            <select name="bd_id" style="width: 100px">
+                <option value="">商务</option>
+                {% for k,v in bd_list.items() %}
+                    <option value="{{ k }}" {% if k|string==bd_id %}selected{% endif %}>{{ v }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="ui button mini blue" value="">查询</button>
+        </div>
+    </form>
+
+    <h3 class="ui horizontal divider header"><a class="ui button mini orange inverted" href="{{ url_for('ad_plugin.ad_add') }}">添加广告</a> </h3>
+
+        <form action="" method="post">
+            <div class="table-responsive">
+                <table class="table ui celled grey sortable" id="table" style="margin-bottom: 40px">
+
+                    <thead>
+                    <tr>
+                        <th>优先级</th>
+                        <th>广告</th>
+                        <th data-table-sortable-type="string">分发名</th>
+                        <th data-table-sortable-type="string">广告形式</th>
+                        <th data-table-sortable-type="string">类型</th>
+                        <th data-table-sortable-type="string">链接</th>
+                        <th data-table-sortable-type="date">创建时间</th>
+                        <th data-table-sortable-type="string">静默</th>
+                        <th data-table-sortable-type="string">二次激活</th>
+                        <th data-table-sortable-type="string">状态</th>
+                        <th data-table-sortable-type="string">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if query %}
+                        {% for item in query %}
+                            <tr {% if item.id == 250 %}class="red"{% endif %}>
+                                <td><input value="{{ item.weights }}" name="{{ item.id }}" style="width: 30px"></td>
+                                <td><div>{{ item.id }}</div>
+                                    <div>{{ item.title }}</div>
+                                    <div class="ui label teal most-mini">{{ item.bd }}</div>
+                                </td>
+                                <td>{{ item.w_title }}</td>
+                                <td>{{ item.exemplar }}</td>
+                                <td>{% for type in item.dev_type %}
+                                    <lable class="ui label grey most-mini">{{ type }}</lable>
+                                    {% endfor %}</td>
+                                <td>{{ item.target_type }}</td>
+                                <td>{{ item.time }}</td>
+                                <td>{% if item.auto_download == 0 %}否
+                                {% else %}是
+                                {% endif %}</td>
+                                <td>{% if item.auto_active == 0 %}否
+                                {% else %}是
+                                {% endif %}</td>
+                                <td>{% if item.state == 0 %}<lable class="ui label teal most-mini">待审核</lable>
+                                {% elif item.state == 1 %}<lable class="ui label green most-mini">审核成功</lable>
+                                {% elif item.state == 100 %}<lable class="ui label red most-mini">锁定</lable>
+                                {% endif %}
+                                </td>
+                                <td>{% if item.id == 250 %}
+                                    <a href="{{ url_for('ad_plugin.pure_plugin_edit', id = item.id) }}"><img
+                                            src="/static/images/2424.png"></a>
+                                    {% else %}
+                                    <a href="{{ url_for('ad_plugin.ad_edit', id = item.id) }}"><img
+                                            src="/static/images/2424.png"></a>
+                                    <a href="{{ url_for('ad_plugin.ad_plan', plan_id = item.plan, ad_id = item.id) }}"><img
+                                            src="/static/images/plan.png"></a>
+                                    <a style="cursor: pointer" onclick="delete_ad({{ item.id }})"><img
+                                            src="/static/images/24.png"></a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+
+                </table>
+            </div>
+            <button type="submit" class="ui button mini block">保存</button>
+        </form>
+    </section>
+
+    {% from "common/element.html" import render_pagination with context %}
+    {{ render_pagination() }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function delete_ad(ad_id) {
+            if (confirm('确认删除该广告？')){
+                var data = {
+                    'ad_id': ad_id
+                };
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    traditional: true,
+                    data: data,
+                    url: "{{ url_for('ad_plugin.delete_ad') }}",
+                    success: function (ret) {
+                        if (ret) {
+                            alert('删除成功');
+                            location.href = '{{ url_for('ad_plugin.ad_list') }}'
+                        }
+                        else {
+                            alert('删除失败');
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+{% endblock %}

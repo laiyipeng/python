@@ -1,0 +1,28 @@
+--开发者收入统计
+DROP TABLE IF EXISTS dev_clearing;
+CREATE TABLE dev_clearing(
+id serial primary key,
+dev_id VARCHAR(20) NOT NULL DEFAULT '',
+app_id VARCHAR(50) NOT NULL DEFAULT '',
+channel VARCHAR(20) NOT NULL DEFAULT '',
+active_new INTEGER NOT NULL DEFAULT 0,
+install INTEGER NOT NULL DEFAULT 0,
+ARPU_install FLOAT NOT NULL DEFAULT 0,
+ARPU_active_new FLOAT NOT NULL DEFAULT 0,
+earnings_install DECIMAL NOT NULL DEFAULT 0,
+earnings_active_new DECIMAL NOT NULL DEFAULT 0,
+earnings_pre DECIMAL NOT NULL DEFAULT 0,
+time DATE DEFAULT now()
+)
+
+--广告收入统计
+DROP TABLE IF EXISTS ad_clearing;
+CREATE TABLE ad_clearing(
+id serial primary key,
+ad_id VARCHAR(20) NOT NULL DEFAULT '',
+install INTEGER NOT NULL DEFAULT 0,
+ARPU_install FLOAT NOT NULL DEFAULT 0,
+earnings_install DECIMAL NOT NULL DEFAULT 0,
+earnings_pre DECIMAL NOT NULL DEFAULT 0,
+time DATE DEFAULT now()
+)

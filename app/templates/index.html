@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="ui menu inverted black">
+  <h4 class="header item">JuLv</h4>
+    <div class="right menu">
+        <div class="ui search">
+                    <div class="ui icon input">
+                        <input class="prompt" type="text" placeholder="Search countries...">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+    </div>
+</div>
+{#    <div style="position: fixed; top:0px; right: 0px; z-index: 100">#}
+{#                <div class="ui search mini">#}
+{#                    <div class="ui icon input">#}
+{#                        <input class="prompt" type="text" placeholder="Search countries...">#}
+{#                        <i class="search icon"></i>#}
+{#                    </div>#}
+{#                    <div class="results"></div>#}
+{#                </div>#}
+{#        </div>#}
+
+
+    <div class="ui container" style="position: relative; width: 70%; margin-top: 30px">
+        {% block head_bar %}
+            <div class="ui black four item menu pointing inverted" style="position: absolute;top:10px ">
+                <a class="item active">
+                    Home
+                </a>
+
+                <div class="ui pointing dropdown link item">
+                    <span class="text">Shopping</span>
+                    <i class="dropdown icon"></i>
+
+                    <div class="menu">
+                        <div class="header">Categories</div>
+                        <div class="item">
+                            <i class="dropdown icon"></i>
+                            <span class="text">Clothing</span>
+
+                            <div class="menu">
+                                <div class="header">Mens</div>
+                                <div class="item">Shirts</div>
+                                <div class="item">Pants</div>
+                                <div class="item">Jeans</div>
+                                <div class="item">Shoes</div>
+                                <div class="divider"></div>
+                                <div class="header">Womens</div>
+                                <div class="item">Dresses</div>
+                                <div class="item">Shoes</div>
+                                <div class="item">Bags</div>
+                            </div>
+                        </div>
+                        <div class="item">Home Goods</div>
+                        <div class="item">Bedroom</div>
+                        <div class="divider"></div>
+                        <div class="header">Order</div>
+                        <div class="item">Status</div>
+                        <div class="item">Cancellations</div>
+                    </div>
+                </div>
+                <a class="item">
+                    Forums
+                </a>
+                <a class="item">
+                    Contact Us
+                </a>
+            </div>
+        {% endblock %}
+
+
+
+
+        <div style="position: fixed; bottom:20px; left: 10px; z-index: 100">
+            {% block login_bar %}
+                <a class="ui blue image label"><img src="/images/avatar/small/veronika.jpg"> Veronika
+                    <div class="detail">登录</div>
+                </a>
+            {% endblock %}
+        </div>
+
+
+        <div>
+            <div style="width:20%; position: absolute; top:70px">
+                {% block side_bar %}
+                    <div class="ui vertical menu grey inverted" style="width: 100%">
+                        <a class="item active">
+                            Home
+                        </a>
+
+                        <div class="ui left pointing dropdown link item">
+                            <i class="dropdown icon"></i>
+                            Messages
+                            <div class="menu">
+                                <div class="item">Inbox</div>
+                                <div class="item">Starred</div>
+                                <div class="item">Sent Mail</div>
+                                <div class="item">Drafts (143)</div>
+                                <div class="divider"></div>
+                                <div class="item">Spam (1009)</div>
+                                <div class="item">Trash</div>
+                            </div>
+                        </div>
+                        <a class="item">
+                            Browse
+                        </a>
+                        <a class="item">
+                            Help
+                        </a>
+                    </div>
+                {% endblock %}
+            </div>
+
+
+            <div style="margin-left: 22%; width: 75%; position: absolute; top:70px">
+                {% block content %}
+                    <div class="ui inverted segment grey form">
+                        <div class="three fields">
+                            <div class="field">
+                                <label>First name</label>
+                                <input type="text" placeholder="First Name">
+                            </div>
+                            <div class="field">
+                                <label>中间名</label>
+                                <input type="text" placeholder="中间名">
+                            </div>
+                            <div class="field">
+                                <label>姓氏</label>
+                                <input type="text" placeholder="Last Name">
+                            </div>
+                            <input type="button" class="ui button" value="搜索">
+                        </div>
+                    </div>
+                    <table class="ui table" style="width: 100%">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>约翰</td>
+                            <td>已审核</td>
+                            <td>John is an interesting boy but sometimes you don't really have enough room to describe
+                                everything you'd like
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>约翰</td>
+                            <td>已审核</td>
+                            <td>John is an interesting boy but sometimes you don't really have enough room to describe
+                                everything you'd like
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>约翰</td>
+                            <td>已审核</td>
+                            <td>John is an interesting boy but sometimes you don't really have enough room to describe
+                                everything you'd like
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>约翰</td>
+                            <td>已审核</td>
+                            <td>John is an interesting boy but sometimes you don't really have enough room to describe
+                                everything you'd like
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>约翰</td>
+                            <td>已审核</td>
+                            <td>John is an interesting boy but sometimes you don't really have enough room to describe
+                                everything you'd like
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>杰米</td>
+                            <td>已审核</td>
+                            <td>Jamie is a kind girl but sometimes you don't really have enough room to describe
+                                everything
+                                you'd like
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>吉尔</td>
+                            <td>Denied</td>
+                            <td>Jill is an alright girl but sometimes you don't really have enough room to describe
+                                everything
+                                you'd like
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table class="ui table" style="">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>约翰</td>
+                            <td>已审核</td>
+                            <td>John is an interesting boy but sometimes you don't really have enough room to describe
+                                everything you'd like
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>杰米</td>
+                            <td>已审核</td>
+                            <td>Jamie is a kind girl but sometimes you don't really have enough room to describe
+                                everything
+                                you'd like
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>吉尔</td>
+                            <td>Denied</td>
+                            <td>Jill is an alright girl but sometimes you don't really have enough room to describe
+                                everything
+                                you'd like
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                {% endblock %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

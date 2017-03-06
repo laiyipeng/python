@@ -1,0 +1,219 @@
+{% extends "plugin/layout.html" %}
+
+{% from "common/element.html" import render_pagination with context %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('data_warning') }}
+{% endblock %}
+
+
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% if messages[0] == '更改成功！' %}
+                    <div class="alert alert-success">{{ messages[0] }}</div>
+                {% else %}
+                    <div class="alert alert-error">{{ messages[0] }}</div>
+                {% endif %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+
+    <section>
+        <div class="page-header head-green">
+            <h3><i class="circular  warning icon"></i>数据预警</h3>
+        </div>
+        <form class="well form-inline well-form" action="" method="get">
+            <input name="channel" type="text" class="span2" placeholder="渠道号" value="{{ channel }}"/>
+
+            <input type="text" id="dateHidden1" name="sdate" placeholder="开始日期" value="{{ sdate }}"
+                   onclick="WdatePicker({el:'dateHidden1',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+                   src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+            <input type="text" id="dateHidden2" name="edate" placeholder="结束日期" value="{{ edate }}"
+                   onclick="WdatePicker({el:'dateHidden2',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+                   src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+            <select name="type">
+                <option value="0" {% if type == '0' %}selected{% endif %}>机型</option>
+                <option value="1" {% if type == '1' %}selected{% endif %}>地区</option>
+                <option value="2" {% if type == '2' %}selected{% endif %}>网络</option>
+                <option value="3" {% if type == '3' %}selected{% endif %}>安装分布</option>
+                <option value="4" {% if type == '4' %}selected{% endif %}>安装新增比</option>
+                <option value="5" {% if type == '5' %}selected{% endif %}>SIM</option>
+                <option value="6" {% if type == '6' %}selected{% endif %}>插件版本</option>
+                <option value="7" {% if type == '7' %}selected{% endif %}>运营商</option>
+            </select>
+            展示个数：<input name="num" type="text" class="span1" placeholder="展示个数" value="{{ num }}"/>
+            <button type="submit" class="ui button mini blue" value="">查询</button>
+
+            <span style="margin-left: 20px" class="ui buttons mini">
+        <button class="blue button ui inverted" name="day" value='-1'><i class="left chevron icon"></i>上一天</button>
+        <div class="or"></div>
+        <button class="green button ui inverted" name="day" value='1'>下一天<i class="right chevron icon"></i></button>
+        </span>
+
+            <a class="ui button mini blue" href="{{ url_for('ad_plugin.warning_area') }}" style="float: right">水位设置</a>
+        </form>
+
+        <h4 class="ui horizontal divider header"><i class="bar chart icon"></i> Charts </h4>
+        <div id="main" style="height:600px"></div>
+        <div id="myChart" onclick="drawChart()"></div>
+        <div class="dialog-confirm" id="dialog1" style="display: none;">
+            <div class="mask"></div>
+            <div class="dialog">
+                <div class="btn-close"><i class="remove icon"></i></div>
+                <div class="dialog-hd"></div>
+                <ul class="dialog-bd">
+                </ul>
+                <div class="dialog-ft"></div>
+            </div>
+        </div>
+
+        <table class="table ui graph-table" style="width: 80%; margin: 0 auto;">
+            <thead>
+            <tr>
+                <th>条目</th>
+                <th>数值</th>
+                <th>占比</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in query %}
+                <tr>
+                    <td onclick="eConsole({name: '{{ item.name }}', type: 'click', seriesIndex: 0})">
+                        <span>{{ item.name }}</span></td>
+                    <td>{{ item.value }}</td>
+                    <td>{{ (item.value/sum*100)|round(3) }}%</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+    <script type="text/javascript">
+        var channel_dict = {{ channel_dict | safe }};
+
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+
+        // 使用
+        require(
+                [
+                    'echarts',
+                    'echarts/chart/funnel',
+                    'echarts/chart/bar', // 使用柱状图就加载bar模块，按需加载
+                    'echarts/chart/pie' // 使用柱状图就加载bar模块，按需加载
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('main'));
+                    // 添加点击事件
+                    var ecConfig = require('echarts/config');
+                    myChart.on(ecConfig.EVENT.CLICK, eConsole);
+
+                    option = {
+                        title: {
+                            text: '',
+                            subtext: ''
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            {#                            formatter: function (params) {#}
+                            {#                                var str = "<div>" + "版本号：" + params[0][1] + "</div>" +#}
+                            {#                                        "<div>" + params[0][0] + "：" + params[0][2] + "</div>" +#}
+                            {#                                        "<div>" + params[1][0] + "：" + params[1][2] + "</div>";#}
+                            {#                                var ch_str = "<div>" + "渠道：" + channel_dict[params[0][1]] + "</div>";#}
+                            {#                                return str + ch_str;#}
+                            {#                            }#}
+                        },
+                        legend: {
+                            data: ['占比', '异常比']
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'value',
+                                boundaryGap: [0, 0.01]
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'category',
+                                data: [{% for item in query %}'{{ item.name }}',{% endfor %}]
+                            }
+                        ],
+                        series: [
+                            {
+                                name: '占比',
+                                type: 'bar',
+                                clickable: true,
+                                data: [{% for item in query %}'{{ (item.value/sum*100)|round(3) }}',{% endfor %}],
+                                color: 'red'
+                            },
+                            {
+                                name: '异常比',
+                                type: 'bar',
+                                clickable: true,
+                                data: [
+                                    {% for item in query %}
+                                        {% if (item.value/sum*100)|round(3)>warning_area and not (item.name=='有SIM') %}
+                                            '{{ (item.value/sum*100)|round(3) }}',
+                                            {% else %}0,
+                                        {% endif %}
+                                    {% endfor %}
+                                ]
+                            }
+                        ]
+                    };
+
+                    // 为echarts对象加载数据
+                    myChart.setOption(option);
+                }
+        );
+        function eConsole(param) {
+            console.log(param);
+            if (typeof param.seriesIndex == 'undefined') {
+                return;
+            }
+            if (param.type == 'click' && $("select[name='type']").val() == '6') {
+                $('#dialog1').css('display', 'block');
+                $('.dialog-hd').html(param.name);
+                var channel_array = channel_dict[param.name].split('/');
+                var channel_str = '';
+                var flag = 0;
+                for (var i = 0; i < channel_array.length; i++) {
+                    channel_str += '<li>' + channel_array[i] + '</li>';
+                    if (i >= 300) {
+                        flag = 1;
+                        break;
+                    }
+                }
+                $('.dialog-bd').html(channel_str);
+                if (flag == 1) {
+                    $('.dialog-ft').html('还有更多数据未能加载......');
+                }
+            }
+        }
+        $('.btn-close').click(function () {
+            $('#dialog1').css('display', 'none');
+        })
+    </script>
+
+
+{% endblock %}

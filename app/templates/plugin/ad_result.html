@@ -1,0 +1,375 @@
+{% extends "plugin/layout.html" %}
+{% block title %}广告效果{% endblock %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('ad_result') }}
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        <div class="ui menu inverted nav"
+         style="position: fixed; width: 100%; top:0; z-index: 100; margin: 0; border-radius:inherit; background-color: #4D804B">
+        <a href="{{ url_for('ad_plugin.ad_list') }}" class="header item icon"><img src="/static/images/wauee_logo.png"
+                                                                                   style="width: 22px">挚盟移动插件SDK后台</a>
+        <div class="ui dropdown item simple">
+            广告
+            <i class="dropdown icon"></i>
+
+            <div class="menu blue">
+                <a class="item label" href="{{ url_for('ad_plugin.ad_list') }}"><i class="list icon"></i> 广告列表</a>
+                <a class="item label" href="{{ url_for('ad_plugin.ad_add') }}"><i class="tag icon"></i> 添加广告</a>
+                <a class="item label" href="{{ url_for('ad_plugin.push_group') }}"><i class="group icon"></i> 强制推送组</a>
+            </div>
+        </div>
+        <a class="item" href="{{ url_for('ad_plugin.channel') }}">开发者</a>
+        <div class="ui dropdown item simple">
+            数据
+            <i class="dropdown icon"></i>
+
+            <div class="menu blue">
+                <a class="item label" href="{{ url_for('ad_plugin.ad_data') }}"><i class="bar chart icon"></i> 产品数据</a>
+                <a class="item label" href="{{ url_for('ad_plugin.data') }}"><i class="tag icon"></i> 广告数据</a>
+                <a class="item label" href="{{ url_for('ad_plugin.action_data') }}"><i class="bar chart icon"></i> 用户行为数据</a>
+                <a class="item label" href="{{ url_for('ad_plugin.sdk') }}"><i class="tag icon"></i> sdk数据</a>
+                <a class="item label" href="{{ url_for('ad_plugin.data_warning') }}"><i class="bar chart icon"></i> 数据预警</a>
+            </div>
+        </div>
+        <div class="ui dropdown item simple">
+            结算
+            <i class="dropdown icon"></i>
+
+            <div class="menu blue">
+                <a class="item label" href="{{ url_for('ad_plugin.clearing') }}"><i class="tag icon"></i> 结算预览</a>
+                <a class="item label" href="{{ url_for('ad_plugin.ad_clearing') }}"><i class="money icon"></i> 广告结算</a>
+                <a class="item label" href="{{ url_for('ad_plugin.ad_result') }}"><i class="columns icon"></i> 广告效果</a>
+            </div>
+        </div>
+        <div class="ui dropdown item simple">
+            其他
+            <i class="dropdown icon"></i>
+
+            <div class="menu blue">
+                <a class="item label" href="{{ url_for('ad_plugin.config') }}"><i class="setting icon"></i> 配置</a>
+                <a class="item label" href="{{ url_for('ad_plugin.sdk_test') }}"><i class="configure icon"></i> 测试入口</a>
+                <a class="item label" href="{{ url_for('ad_plugin.jar_download') }}"><i class="download icon"></i> sdk下载</a>
+                <a class="item label" href="{{ url_for('ad_plugin.op_record') }}"><i class="record icon"></i> 操作记录</a>
+            </div>
+        </div>
+        <div class="right menu">
+            <div class="ui item">
+                <a class="ui image label green"> {{ user.real_name }}</a>
+                <a href="{{ url_for('rbac.logout') }}">
+                    <div class="detail ui"><i class="icon delete"></i></div>
+                </a>
+            </div>
+            <div class="ui category search item">
+                <div class="ui icon input transparent inverted">
+                    <input class="prompt" type="text" placeholder="Search...">
+                    <i class="search link icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    <section style="margin-top: 90px">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        {% if message == '修改成功' %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% else %}
+                            <div class="alert alert-error">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <h3 class="ui horizontal divider header"><i class="columns icon"></i> 广告效果 </h3>
+
+        <form class="well form-inline well-form" style="margin-top: 50px; margin-bottom: 50px">
+            <div>
+                <input name="ad_id" type="text" class="span1" placeholder="ID" value="{{ ad_id }}"/>
+                <input name="ad_name" type="text" class="span2" placeholder="广告名" value="{{ ad_name }}"/>
+                <input name="w_title" type="text" class="span2" placeholder="分发名" value="{{ w_title }}"/>
+
+                <input type="text" id="dateHidden1" name="sdate" placeholder="开始日期" value="{{ sdate }}"
+                       onclick="WdatePicker({el:'dateHidden1',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+                       src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+                <input type="text" id="dateHidden2" name="edate" placeholder="结束日期" value="{{ edate }}"
+                       onclick="WdatePicker({el:'dateHidden2',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+                       src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+                <button type="submit" class="ui button mini blue" value="">查询</button>
+            <span style="margin-left: 20px" class="ui buttons mini">
+        <button class="blue button ui inverted" name="day" value='-1'><i class="left chevron icon"></i>上一天</button>
+        <div class="or"></div>
+        <button class="green button ui inverted" name="day" value='1'>下一天<i class="right chevron icon"></i></button>
+        </span>
+            </div>
+        </form>
+
+    <h3 class="ui horizontal divider header"> <button type="button" class="ui button green mini" onclick="update_ad_result()">生成效果表</button> </h3>
+
+        <form action="" method="post">
+            <div class="table-responsive">
+                <table class="table ui celled grey sortable" id="table" style="margin-bottom: 40px; ">
+                    <caption style="text-align: center; font-size: 16px">
+                        <p class="large ui label pointing below" style="padding-right:30px;">
+                            展示：{{ show }}，
+                            点击：{{ click }}，
+                            下载：{{ download }}，
+                            安装：{{ install }}，
+                            厂商个数：{{ back_num }}，
+                            收入：{{ earning|round(3) }}，
+                            成本：{{ pay|round(3) }}，
+                            利润：{{ profit|round(3) }}，
+                            ecpm：{{ (earning/show*1000)|round(3) }}，
+                            安装arpu：{{ (earning/install)|round(3) }}，
+                            sdk新增总数：{{ active_new }}，
+                            sdk新增arpu：{{ (earning/active_new)|round(3) }}
+                        </p>
+                    </caption>
+                    <thead id="inner" style="width: 100%; z-index: 0">
+                    <tr>
+                        <th data-table-sortable-type="date" style="width: 7.35%">日期</th>
+                        <th style="width: 15.2%">广告</th>
+                        <th data-table-sortable-type="string" style="width: 14.9%">类型</th>
+                        <th data-table-sortable-type="string" style="width: 4.1%">计费</th>
+                        <th data-table-sortable-type="number" style="width: 5.1%">统计数</th>
+                        <th data-table-sortable-type="number" style="width: 4.1%">点击率</th>
+                        <th data-table-sortable-type="number" style="width: 5%">下载率</th>
+                        <th data-table-sortable-type="number" style="width: 5%">安装率</th>
+                        <th data-table-sortable-type="number" style="width: 5%">个数/收入</th>
+                        <th data-table-sortable-type="number" style="width: 5%">成本</th>
+                        <th data-table-sortable-type="number" style="width: 5%">利润</th>
+                        <th data-table-sortable-type="number" style="width: 5%">利润率</th>
+                        <th data-table-sortable-type="number" style="width: 5%">ecpm</th>
+                        <th data-table-sortable-type="number" style="width: 5%">安装arpu</th>
+                        <th data-table-sortable-type="number" style="width: 5%">新增arpu</th>
+                        <th data-table-sortable-type="string" style="width: 5%">链接类型</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if list %}
+                        {% for item in list %}
+                            <tr>
+                                <td>{{ item.date }}</td>
+                                <td>
+                                    <div><label class="ui label most-mini teal">{{ item.bd }}</label>
+                                        {% if item.state == 0 %}<label class="ui label most-mini red">已下线</label>
+                                        {% elif item.state == -1 %}<label class="ui label most-mini red">已删除</label>{% endif %}
+                                    </div>
+                                    {{ item.ad_id }}
+                                    <div>{{ item.title }}</div>
+                                    <div>{{ item.w_title }}</div>
+                                </td>
+                                <td>
+                                    {% if item.exe %}
+                                        {% for item2 in item.exe %}
+                                        <div><span class="ui label brown most-mini">{{ item2.timestamp[:8] }}</span><span class="ui label grey most-mini"> {{ item2.exemplar }}</span></div>
+                                        {% endfor %}
+                                        {% else %}
+                                        <div class="ui label grey most-mini">{{ item.exemplar }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div>{{ item.charge_type }}</div>
+                                    <div>{{ item.adv_price }}</div>
+                                </td>
+                                <td>
+                                    <div style="color: #704983">{{ item.show }}</div>
+                                    <div class="ui divider" style="margin: 0px"></div>
+                                    <div style="color: #3a8310">{{ item.click }}</div>
+                                    <div class="ui divider" style="margin: 0px"></div>
+                                    <div style="color: #0c070a">{{ item.download }}</div>
+                                    <div class="ui divider" style="margin: 0px"></div>
+                                    <div style="color: #ff2a66">{{ item.install }}</div>
+                                </td>
+                                <td>{{ item.click_rate|round(2) }}%</td>
+                                <td>{{ item.download_rate|round(2) }}%</td>
+                                <td>{{ item.install_rate|round(2) }}%</td>
+                                <td>
+                                    <div>{{ item.back_num }}</div>
+                                    <div>{{ item.earning|round(2) }}</div>
+                                </td>
+                                <td>{{ item.pay|round(2) }}</td>
+                                <td {% if item.profit<0 %}class="red"{% endif %}>{{ item.profit|round(2) }}</td>
+                                <td {% if item.profit<0 %}class="red"{% endif %}>{{ item.profit_rate|round(2) }}%</td>
+                                <td>{{ item.ecpm|round(2) }}</td>
+                                <td>{{ item.arpu|round(2) }}</td>
+                                <td>{{ item.active_arpu|round(2) }}</td>
+                                <td>
+                                    <div class="ui label most-mini green">{{ item.target_type }}</div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </section>
+
+    {% block scripts %}
+        <script type="text/javascript" src="http://www.my97.net/dp/My97DatePicker/WdatePicker.js"></script>
+        <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+        <script src="/static/semantic/dist/semantic.min.js"></script>
+        <script type="text/javascript" src="/static/jquery.tableSorter.js"></script>
+        <script src="http://images.wauee.com/zmv5/js/lhgdialog/lhgdialog.min.js"></script>
+        <script type="text/javascript" src="/static/jquery.tableSorter.js"></script>
+        <script type="text/javascript">
+            $('.btn-dialog').click(function () {
+                var dom = $(this);
+                var url = dom.attr("href");
+                var title = dom.attr("t");
+                var width = dom.attr('w');
+                var height = dom.attr('h');
+                $.dialog({
+                    title: false,
+                    id: 'adbox_window',
+                    content: 'url:' + url,
+                    lock: true,
+                    width: width + 'px',
+                    height: parseInt(height),
+                    cancelVal: '关闭',
+                    cancel: true
+                });
+                return false;
+            });
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                $(".table").tableSortable();
+                $(".table").addClass('ui grey sortable selectable');
+            });
+
+            var content = [
+                {title: 'Andorra'},
+                {title: 'United Arab Emirates', description: '你是不是傻'},
+                {title: 'Afghanistan'},
+                {title: 'Antigua'},
+                {title: 'Anguilla'},
+                {title: 'Albania'},
+                {title: 'Armenia'},
+                {title: 'Netherlands Antilles'},
+                {title: 'Angola'},
+                {title: 'Argentina'},
+                {title: 'American Samoa'},
+                {title: 'Austria'},
+                {title: 'Australia'},
+                {title: 'Aruba'},
+                {title: 'Aland Islands'},
+                {title: 'Azerbaijan'},
+                {title: 'Bosnia'},
+                {title: 'Barbados'},
+                {title: 'Bangladesh'},
+                {title: 'Belgium'},
+                {title: 'Burkina Faso'},
+                {title: 'Bulgaria'},
+                {title: 'Bahrain'},
+                {title: 'Burundi'}
+                // etc
+            ];
+
+            $('.ui.dropdown')
+                    .dropdown()
+            ;
+            $('.ui.accordion')
+                    .accordion()
+            ;
+            $('#select')
+                    .dropdown()
+            ;
+            $('.ui.modal')
+                    .modal()
+            ;
+
+            $('.ui.search')
+                    .search({
+                        source: content,
+                        searchFields: [
+                            'title', 'description'
+                        ],
+                        searchFullText: false
+                        {#                apiSettings: {#}
+                        {#                      url: 'custom-search/?q={query}'#}
+                        {#                    },#}
+                        {#                    type: 'category'#}
+                    })
+            ;
+            $('.message .close')
+                    .on('click', function () {
+                        $(this)
+                                .closest('.message')
+                                .transition('fade')
+                        ;
+                    })
+            ;
+        </script>
+
+        <script>
+            $(".button").click(function () {
+                $(this).addClass('loading disabled')
+            });
+        </script>
+
+        <script type="text/javascript">
+            var obj11 = document.getElementById("inner");
+            var top11 = getTop(obj11);
+            var isIE6 = /msie 6/i.test(navigator.userAgent);
+            window.onscroll = function () {
+
+                var bodyScrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                if (bodyScrollTop > top11) {
+                    obj11.style.position = (isIE6) ? "absolute" : "fixed";
+                    obj11.style.top = (isIE6) ? bodyScrollTop + "px" : "47px";
+                } else {
+                    obj11.style.position = "static";
+                }
+            };
+            function getTop(e) {
+
+                var offset = e.offsetTop;
+                if (e.offsetParent != null) offset += getTop(e.offsetParent);
+                return offset;
+            }
+        </script>
+
+        <script>
+    function update_ad_result(obj) {
+            if (confirm('确认生成？')) {
+                var sdate = $('[name=sdate]').val();
+                var edate = $('[name=edate]').val();
+                var data = {
+                    'sdate': sdate,
+                    'edate': edate
+                };
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    traditional: true,
+                    data: data,
+                    url: "{{ url_for('crontab.update_ad_result') }}",
+                    success: function (ret) {
+                        console.log(ret);
+                        status = JSON.parse(ret).status;
+                        if (status == 200) {
+                            alert('生成完毕！');
+                            location.reload();
+                        }
+                        else {
+                            alert('生成失败');
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+    {% endblock %}
+
+{% endblock %}

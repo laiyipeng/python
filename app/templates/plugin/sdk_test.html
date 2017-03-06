@@ -1,0 +1,65 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('test') }}
+{% endblock %}
+
+{% block content %}
+    <div>
+    {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        {% if message == '清除成功！' %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% else %}
+                            <div class="alert alert-error">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div class="page-header head-green">
+        <h3><i class="icon ui configure circular"></i>测试数据</h3>
+    </div>
+    <form class="well form-inline well-form" action="" method="get">
+        <input name="app_id" type="text" class="span2" placeholder="应用id" value="{{ app_id }}"/>
+        <select name="imei" style="width: 150px">
+            {% for k,v in test_phone_imei.items() %}
+                <option value="{{ k }}" {% if imei==k %}selected{% endif %}>{{ v }}</option>
+            {% endfor %}
+        </select>
+        <button name="search" value="1" class="ui button mini blue" onclick="$(this).addClass('loading')">查询</button>
+            <button name="clear" value="1" class="ui button mini blue" onclick="$(this).addClass('loading')">清除缓存</button>
+    </form>
+    <table class="table" id="table" style="margin-bottom: 100px; width: 100%">
+        <thead>
+        <tr>
+            <th>渠道</th>
+            <th>应用id</th>
+            <th>展示</th>
+            <th>点击</th>
+            <th>下载</th>
+            <th>安装</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% if query %}
+                {% for item in query %}
+                    <tr>
+                        <td>{{ item.channel }}</td>
+                        <td>{{ item.app_id }}</td>
+                        <td>{{ item.show }}</td>
+                        <td>{{ item.click }}</td>
+                        <td>{{ item.download }}</td>
+                        <td>{{ item.install }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+    {#                        <h4><strong>总计：</strong></h4>#}
+    {#                    <strong>sdk新增激活用户：</strong><strong class="right-50px">{{ total }}</strong>#}
+{% endblock %}

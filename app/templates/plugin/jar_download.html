@@ -1,0 +1,129 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('download') }}
+{% endblock %}
+
+
+{% block content %}
+    {% from "common/flash.html" import flash with context %}
+    {{ flash() }}
+
+    <h3 class="ui horizontal divider header"><i class="circular download icon"></i> 加一个版本 </h3>
+    <form class="well ui form" action="" method="post" enctype="multipart/form-data">
+    <div class="fields">
+        <div class="field four wide">
+            <label>版本</label>
+        <input name="version" type="text" class="span2" placeholder="" value="{{ version }}" required=""/>
+            </div>
+        <div class="field twelve wide">
+            <label>描述</label>
+        <input name="description" type="text" class="span2" placeholder="" value="{{ discription }}" required=""/>
+            </div>
+        </div>
+        <div class="field">
+            <label>SDK</label>
+            <div class="iupload">
+                <div class="img_rel" id="head_img_div0_show" style="display:none;">
+                    <img src="" class="img-rounded" style="width:150px; height: 150px"/>
+                    <input type="hidden" name="head_img0" value=""/>
+
+                    <div class="close">
+                        <img src="http://dl.nx5.com/js/close.png" style="width: 100%;">
+                    </div>
+                </div>
+                <div id="head_img_div0">上传文件</div>
+            </div>
+        </div>
+        <button type="submit" class="ui button block teal" value="">添加</button>
+    </form>
+    <table class="table" id="table" style="margin-bottom: 100px">
+        <thead>
+        <tr>
+            <th>版本号</th>
+            <th data-table-sortable-type="string">描述</th>
+            <th data-table-sortable-type="string">下载地址1</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <form method="post">
+            {% if query %}
+                {% for item in query %}
+                    <tr>
+                        <td>{{ item.version }}</td>
+                        <td>{{ item.description }}</td>
+                        <td><a href='{{ item.url }}'>戳这里下载</a></td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </form>
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="http://static.wauee.com/base/jquery/jquery.uploadfile.js?v-1004"></script>
+    <script type="text/javascript">
+        $("table").find('tr:eq(1)').css('font-weight', 'bold');
+        $("table").find('tr:eq(1)').css('color', 'red');
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var settings = {
+                url: "/upload",
+                method: "POST",
+                formData: {'project': 'img', 'is_rename': '1'},
+                allowedTypes: "rar,zip,doc,docx,png",
+                fileName: "upload_file",
+                extErrorStr: "被禁止, 可上传的文件格式是:",
+                sizeErrorStr: "尺寸太大, 允许最大的尺寸是:",
+                uploadErrorStr: "上传出错",
+                multiple: true,
+                maxFileSize: 47185920,
+                filenameErrorStr: "文件名不合法, 请使用字母,数字,点,下划线,中划线来命名",
+                validateFileName: true,
+                uploadButtonClass: 'btn btn-default',
+                dragDropStr: "",
+                dragdropWidth: '100%',
+                statusBarWidth: '100%',
+                fileCounterStyle: "",
+                cancelStr: "停止",
+                abortStr: "中断",
+                doneStr: "完成",
+                showDelete: false,
+                showDone: false,
+                showAbort: false,
+                returnType: 'json',
+                customErrorKeyStr: "error",
+                btnerrorClass: "btn btn-danger btn-sm fl",
+                btnsuccessClass: "btn btn-success btn-sm fl",
+                downloadStr: "下载",
+                onSuccess: function (files, data, xhr, obj) {
+                    $('.ajax-file-upload-statusbar').fadeOut();
+                    if (data.status) {
+                        sdom = $('#' + obj.attr('id') + "_show");
+                        obj.dd.hide();
+                        sdom.children('img.img-rounded').attr('src', data.obj.url);
+                        sdom.children("input[type='hidden']").val(data.obj.url);
+                        sdom.show();
+                    }
+                },
+                onError: function (files, status, errMsg) {
+                    // showTips('danger', "上传失败");
+                }
+            };
+            $("#head_img_div0").uploadFile(settings);
+        });
+
+        $('div.img_rel > div.close').click(function () {
+            $(this).siblings('img.img-rounded').attr('src', '');
+            $(this).siblings("input[type='hidden']").val('');
+            $(this).parent().siblings('div.well').show();
+            $(this).parent().hide();
+
+        });
+    </script>
+{% endblock %}

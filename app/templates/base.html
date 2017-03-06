@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/semantic/dist/semantic.min.css">
+    <style>
+        body {
+            background: #e7f0e9 no-repeat center;
+            background-size: 100%;
+        }
+    </style>
+    {% block style %}{% endblock %}
+</head>
+<body>
+{% block body %}
+
+{% endblock %}
+</body>
+</html>
+
+<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<script src="/static/semantic/dist/semantic.min.js"></script>
+<script>
+    $('.ui.dropdown')
+            .dropdown()
+    ;
+    $('.ui.accordion')
+            .accordion()
+    ;
+    $('#select')
+            .dropdown()
+    ;
+    $('.ui.modal')
+            .modal()
+    ;
+    var
+            content = [
+                {
+                    title: 'Horse',
+                    description: 'An Animal'
+                },
+                {
+                    title: 'Cow',
+                    description: 'Another Animal'
+                }
+            ]
+            ;
+    $('.ui.search')
+            .search({
+                source: content,
+                searchFields: [
+                    'title', 'description'
+                ],
+                searchFullText: false
+            })
+    ;
+
+
+</script>
+{% block js %}
+
+{% endblock %}

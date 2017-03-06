@@ -1,0 +1,130 @@
+{% extends "plugin/layout.html" %}
+
+{% from "common/element.html" import render_pagination with context %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('zmns_data') }}
+{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="page-header head-green">
+            <h3><i class="circular table icon"></i>每日数据</h3>
+        </div>
+        <form class="well form-inline well-form" action="" method="get">
+            <input name="ad_id" type="text" class="span1" placeholder="广告ID" value="{{ ad_id }}"/>
+            <input name="channel" type="text" class="span2" placeholder="渠道号" value="{{ channel }}"/>
+            <select name="ad_type" style="width: 150px">
+                <option value="">广告形式</option>
+                {% for k, v in ad_type_dict.items() %}
+                    <option value="{{ k }}" {% if ad_type == k|string %}selected{% endif %}>{{ v }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" id="dateHidden1" name="sdate" placeholder="开始日期" value="{{ sdate }}"
+                   onclick="WdatePicker({el:'dateHidden1',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+                   src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+            <input type="text" id="dateHidden2" name="edate" placeholder="结束日期" value="{{ edate }}"
+                   onclick="WdatePicker({el:'dateHidden2',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+                   src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+            <button type="submit" class="ui button mini blue" value="">查询</button>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table" id="table" style="margin-bottom: 50px">
+                <caption style="text-align: center; font-size: 16px">
+                    <p class="large ui label" style="padding-right:30px;">
+                        展示：{{ total_query.sum_show }}，
+                        点击：{{ total_query.sum_click }}，
+                        下载：{{ total_query.sum_download|int }}，
+                        安装：{{ total_query.sum_install|int }}，
+                        激活：{{ total_query.sum_active|int }}，
+                    </p>
+                </caption>
+                <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>渠道号</th>
+                    <th>开发者</th>
+                    <th>广告</th>
+                    <th>广告形式</th>
+                    <th>展示</th>
+                    <th>点击</th>
+                    <th>下载</th>
+                    <th>安装</th>
+                    <th>激活</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if query %}
+                    {% for grand in query %}
+                        <tr>
+                            <td>{{ grand.time }}</td>
+                            <td>
+                                <a style="cursor: pointer;" onclick="showDetail(this);" id="{{ grand.time }}">+</a>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ grand.show }}</td>
+                            <td>{{ grand.click }}</td>
+                            <td>{{ grand.download }}</td>
+                            <td>{{ grand.install }}</td>
+                            <td>{{ grand.active }}</td>
+                            {% for parent in grand.data %}
+                                <tr data-value="{{ grand.time }}" style="display: none">
+                                    <td></td>
+                                    <td>{{ parent.real_channel }}</td>
+                                    <td>{{ parent.dev }}</td>
+                                    <td>
+                                        <a style="cursor: pointer;" onclick="showDetail(this);"
+                                           id="{{ grand.time }}_{{ parent.real_channel }}">+</a>
+                                    </td>
+                                    <td></td>
+                                    <td>{{ parent.show }}</td>
+                                    <td>{{ parent.click }}</td>
+                                    <td>{{ parent.download }}</td>
+                                    <td>{{ parent.install }}</td>
+                                    <td>{{ parent.active }}</td>
+                                    {% for child in parent.data %}
+                                        <tr data-value="{{ grand.time }}_{{ parent.real_channel }}"
+                                            style="display: none">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{{ plan_dict.get(child.ad_id) }}</td>
+                                            <td>{{ child.ad_type | ad_display_type_name }}</td>
+                                            <td>{{ child.show }}</td>
+                                            <td>{{ child.click }}</td>
+                                            <td>{{ child.download }}</td>
+                                            <td>{{ child.install }}</td>
+                                            <td>{{ child.active }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function showDetail(object) {
+            var id = $(object).attr('id');
+
+            if ($(object).text() == '+') {
+                $('[data-value=' + id + ']').show();
+                $(object).text('-');
+            } else {
+                $('[data-value^=' + id + ']').hide();
+                $('[id^=' + id + ']').text('+');
+                $(object).text('+');
+            }
+        }
+    </script>
+{% endblock %}

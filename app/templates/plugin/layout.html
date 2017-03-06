@@ -1,0 +1,257 @@
+{% extends "bootstrap/layout_backend.html" %}
+
+{%- block metas %}{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="/static/semantic/dist/semantic.min.css">
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="../static/css/weui.css">
+    <style type="text/css">
+        input[type='text'], select {
+            height: 30px;
+            width: 100px;
+        }
+
+        .ui.menu {
+            font-size: 15px;
+            font-family: "微软雅黑", Arial, sans-serif;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        <div class="ui menu inverted nav"
+             style="position: fixed; width: 100%; top:0; z-index: 100; margin: 0; border-radius:inherit; background-color: #4D804B">
+            <a href="{{ url_for('ad_plugin.ad_list') }}" class="header item icon"><img
+                    src="/static/images/wauee_logo.png"
+                    style="width: 22px">挚盟移动插件SDK后台</a>
+
+            <div class="ui dropdown item simple">
+                广告
+                <i class="dropdown icon"></i>
+
+                <div class="menu blue">
+                    <a class="item label" href="{{ url_for('ad_plugin.ad_list') }}"><i class="list icon"></i> 广告列表</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.ad_add') }}"><i class="tag icon"></i> 添加广告</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.push_group') }}"><i class="group icon"></i> 强制推送组</a>
+                </div>
+            </div>
+            <a class="item" href="{{ url_for('ad_plugin.channel') }}">开发者</a>
+
+            <div class="ui dropdown item simple">
+                数据
+                <i class="dropdown icon"></i>
+
+                <div class="menu">
+                    <a class="item label" href="{{ url_for('ad_plugin.ad_data') }}"><i class="bar chart icon"></i> 产品数据</a>
+
+                    <a class="item label" href="{{ url_for('ad_plugin.data') }}"><i class="tag icon"></i> 广告数据</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.zmns_data') }}"><i class="tag icon"></i> 统一广告数据</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.action_data') }}"><i class="bar chart icon"></i>
+                        用户行为数据</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.sdk') }}"><i class="tag icon"></i> sdk数据</a>
+
+                    <div class="ui dropdown item simple">
+                        <a href="{{ url_for('ad_plugin.data_warning') }}" style="color: #000000"><i
+                                class="bar chart icon"></i> 数据预警</a>
+                        <i class="dropdown icon"></i>
+
+                        <div class="menu">
+                            <a class="item label" href="{{ url_for('ad_plugin.data_warning', type=0) }}"><i
+                                    class="tag icon"></i> 机型</a>
+                            <a class="item label" href="{{ url_for('ad_plugin.data_warning', type=1) }}"><i
+                                    class="tag icon"></i> 地区</a>
+                            <a class="item label" href="{{ url_for('ad_plugin.data_warning', type=2) }}"><i
+                                    class="tag icon"></i> 网络</a>
+                            <a class="item label" href="{{ url_for('ad_plugin.data_warning', type=3) }}"><i
+                                    class="tag icon"></i> 安装分布</a>
+                            <a class="item label" href="{{ url_for('ad_plugin.data_warning', type=4) }}"><i
+                                    class="tag icon"></i> 安装新增</a>
+                            <a class="item label" href="{{ url_for('ad_plugin.data_warning', type=5) }}"><i
+                                    class="tag icon"></i> SIM卡</a>
+                            <a class="item label" href="{{ url_for('ad_plugin.data_warning', type=6) }}"><i
+                                    class="tag icon"></i> 插件版本</a>
+                            <a class="item label" href="{{ url_for('ad_plugin.data_warning', type=7) }}"><i
+                                    class="tag icon"></i> 运营商</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui dropdown item simple">
+                结算
+                <i class="dropdown icon"></i>
+
+                <div class="menu blue">
+                    <a class="item label" href="{{ url_for('ad_plugin.clearing') }}"><i class="tag icon"></i> 结算预览</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.ad_clearing') }}"><i class="money icon"></i> 广告结算</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.ad_result') }}"><i class="columns icon"></i> 广告效果</a>
+                </div>
+            </div>
+            <div class="ui dropdown item simple">
+                其他
+                <i class="dropdown icon"></i>
+
+                <div class="menu blue">
+                    <a class="item label" href="{{ url_for('ad_plugin.config') }}"><i class="setting icon"></i> 配置</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.sdk_test') }}"><i class="configure icon"></i> 测试入口</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.jar_download') }}"><i class="download icon"></i>
+                        sdk下载</a>
+                    <a class="item label" href="{{ url_for('ad_plugin.op_record') }}"><i class="record icon"></i>
+                        操作记录</a>
+                </div>
+            </div>
+            <div class="right menu">
+                <div class="ui item">
+                    <a class="ui image label green"> {{ user.real_name }}</a>
+                    <a href="{{ url_for('rbac.logout') }}">
+                        <div class="detail ui"><i class="icon delete"></i></div>
+                    </a>
+                </div>
+                <div class="ui category search item">
+                    <div class="ui icon input transparent inverted">
+                        <input class="prompt" type="text" placeholder="Search...">
+                        <i class="search link icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block container %}
+        <div class="container-fluid">
+            <div class="row-fluid">
+
+                <!-- sidevar-nav -->
+                <div class="span2">
+                    {% block sidebar_nav -%}
+                    {%- endblock %}
+                </div>
+                <!--/span-->
+
+                <div class="span10">
+                    {% block content -%}
+                    {%- endblock %}
+                </div>
+                <!--/span-->
+            </div><!--/row-->
+        </div>
+        {% block footer %}
+        {% endblock %}
+    {% endblock %}
+
+    {% block scripts %}
+        <script type="text/javascript" src="http://www.my97.net/dp/My97DatePicker/WdatePicker.js"></script>
+        <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+        <script src="/static/semantic/dist/semantic.min.js"></script>
+        <script type="text/javascript" src="/static/jquery.tableSorter.js"></script>
+        <script src="http://images.wauee.com/zmv5/js/lhgdialog/lhgdialog.min.js"></script>
+        <script type="text/javascript" src="/static/jquery.tableSorter.js"></script>
+        <script type="text/javascript">
+            $('.btn-dialog').click(function () {
+                var dom = $(this);
+                var url = dom.attr("href");
+                var title = dom.attr("t");
+                var width = dom.attr('w');
+                var height = dom.attr('h');
+                $.dialog({
+                    title: false,
+                    id: 'adbox_window',
+                    content: 'url:' + url,
+                    lock: true,
+                    width: width + 'px',
+                    height: parseInt(height),
+                    cancelVal: '关闭',
+                    cancel: true
+                });
+                return false;
+            });
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                $(".table").tableSortable();
+                $(".table").addClass('ui grey sortable selectable');
+            });
+
+            var content = [
+                {title: 'Andorra'},
+                {title: 'United Arab Emirates', description: '你是不是傻'},
+                {title: 'Afghanistan'},
+                {title: 'Antigua'},
+                {title: 'Anguilla'},
+                {title: 'Albania'},
+                {title: 'Armenia'},
+                {title: 'Netherlands Antilles'},
+                {title: 'Angola'},
+                {title: 'Argentina'},
+                {title: 'American Samoa'},
+                {title: 'Austria'},
+                {title: 'Australia'},
+                {title: 'Aruba'},
+                {title: 'Aland Islands'},
+                {title: 'Azerbaijan'},
+                {title: 'Bosnia'},
+                {title: 'Barbados'},
+                {title: 'Bangladesh'},
+                {title: 'Belgium'},
+                {title: 'Burkina Faso'},
+                {title: 'Bulgaria'},
+                {title: 'Bahrain'},
+                {title: 'Burundi'}
+                // etc
+            ];
+
+            $('.ui.dropdown')
+                    .dropdown()
+            ;
+            $('.ui.accordion')
+                    .accordion()
+            ;
+            $('#select')
+                    .dropdown()
+            ;
+            $('.ui.modal')
+                    .modal()
+            ;
+            $('.ui.checkbox')
+                    .checkbox()
+            ;
+
+            $('.ui.search')
+                    .search({
+                        source: content,
+                        searchFields: [
+                            'title', 'description'
+                        ],
+                        searchFullText: false
+                        {#                apiSettings: {#}
+                        {#                      url: 'custom-search/?q={query}'#}
+                        {#                    },#}
+                        {#                    type: 'category'#}
+                    })
+            ;
+            $('.message .close')
+                    .on('click', function () {
+                        $(this)
+                                .closest('.message')
+                                .transition('fade')
+                        ;
+                    })
+            ;
+        </script>
+
+        <script>
+            $(".button").click(function () {
+                $(this).addClass('loading disabled')
+            });
+        </script>
+    {% endblock %}
+{% endblock %}
+
+
+
+

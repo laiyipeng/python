@@ -1,0 +1,17 @@
+<html>
+<head>
+
+</head>
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+<body>
+<form action="" method="post">
+    {{ form.id }}
+    {{ form.name }}
+    {{ form.value }}
+    {{ form.submit }}
+    {{ form.csrf_token }}
+</form>
+</body>
+</html>

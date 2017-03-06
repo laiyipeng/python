@@ -1,0 +1,66 @@
+{% extends "plugin/layout.html" %}
+
+{% block content %}
+    <div class="page-header head-green">
+        <h3>最近7天预返sdk新增arpu值</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table" id="table" style="margin-bottom: 50px">
+            {#        <caption style="text-align: center; font-size: 16px">#}
+            {#            <p class="large ui label pointing below " style="padding-right:30px;">#}
+            {#                sdk新增：{{ sum_user|int }}#}
+            {#                安装数：{{ sum_install|int }}#}
+            {#                安装ARPU值：{{ arpu|round(4) }}#}
+            {#                总支出：{{ sum_install_price|round(3) }}#}
+            {#                总收入：{{ sum_earning|round(3) }}#}
+            {#            </p>#}
+            {#            <form method="post" style="display: inline-block; margin: 0; float: right;">#}
+            {#                <div style="float: right" class="ui form">#}
+            {#                    <label style="margin-left: 10px">总收入：</label>#}
+            {#                    <input name="earnings" type="text" class="span2" style="width: 100px" placeholder="总收入"#}
+            {#                           value="{{ sum_earning|round(3) }}"><strong style="margin-right: 10px">元</strong>#}
+            {#                    <button type="submit" class="ui button tiny" value='' style="margin-right: 20px">保存</button>#}
+            {#                </div>#}
+            {#            </form>#}
+            {#        </caption>#}
+
+            <thead>
+            <tr>
+                <th data-table-sortable-type="date">日期</th>
+                <th data-table-sortable-type="string">开发者</th>
+                <th>渠道号</th>
+                <th>sdk新增</th>
+                <th>安装</th>
+                <th>有效安装</th>
+                <th>预返金额</th>
+                <th>预返个数</th>
+                <th>预返安装
+                    <div>arpu值</div>
+                </th>
+                <th>预返sdk
+                    <div>新增arpu值</div>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% if query %}
+                {% for item in query %}
+                    <tr>
+                        <td>{{ item.time }}</td>
+                        <td><a title="{{ item.dev_id }}"> {{ item.dev }}</a></td>
+                        <td>{{ item.channel }}</td>
+                        <td>{{ item.active_new }}</td>
+                        <td>{{ item.install }}</td>
+                        <td>{{ item.install_sim }}</td>
+                        <td>{{ item.earnings_pre }}</td>
+                        <td>{{ (item.earnings_pre|float / 0.8)|round(0) }}</td>
+                        <td>{{ item.real_arpu_install|round(3) }}</td>
+                        <td>{{ item.real_arpu_active_new|round(3) }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

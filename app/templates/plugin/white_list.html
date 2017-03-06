@@ -1,0 +1,153 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('channel') }}
+{% endblock %}
+
+
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                    {% if message == '添加成功' %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% else %}
+                        <div class="alert alert-error">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div class="page-header head-green">
+        <h3> {% if type == '1' %}白名单{% else %}黑名单{% endif %}管理：<span style="color: #ff604a">{{ channel }}</span></h3>
+        <h4></h4>
+    </div>
+
+    <form class="well form-inline well-form" action="" method="post">
+        <div class="ui form">
+            <div class="fields">
+                <div class="field">
+                    <select name="ad_id" id="ad_id" multiple="" style="width: 200px" class="ui search dropdown small">
+                        <option value="">--请选择--</option>
+                        {% if ad_list %}
+                            {% for item in ad_list %}
+                                <option value="{{ item.id }}">{{ item.title }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="field">
+                    <input type="submit" class="btn btn-primary" name='submit' value='添加'/>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <table class="table" id="table" style="margin-bottom: 400px; width: 80%">
+        <thead>
+        <tr>
+            <th>开发者id</th>
+            <th data-table-sortable-type="string">开发者</th>
+            <th>应用id</th>
+            <th>渠道号</th>
+            <th>广告id</th>
+            <th>广告名</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% if query %}
+            {% for item in query %}
+                {% for item2 in item.ad_lst %}
+                    <tr id="{{ item2[1] }}">
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.dev }}</td>
+                        <td>{{ item.app_id }}</td>
+                        <td>{{ item.channel }}</td>
+                        <td>{{ item2[1] }}</td>
+                        <td>{{ item2[0] }}</td>
+                        <td><a href="javascript: post({{ item2[1] }})">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+    <div hidden="">
+        <span id="type">{{ type }}</span><span id="app_id">{{ app_id }}</span>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $('select.dropdown')
+                .dropdown()
+        ;
+    </script>
+    <script>
+        var dev = $("[name ='ad_id']").val();
+        function a2() {
+            if ($("[name ='ad_id']").val() == '') {
+                alert('开发者不能为空');
+            }
+        }
+
+        function post(ad_id) {
+            var app_id = $('#app_id').text();
+            var type = $('#type').text();
+            var data = {
+                'ad_id': ad_id,
+                'app_id': app_id,
+                'type': type
+            };
+            if (confirm('确认删除？')) {
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    traditional: true,
+                    data: data,
+                    url: "{{ url_for('ad_plugin.white_delete') }}",
+                    success: function (ret) {
+                        if (ret) {
+                            $('#' + ad_id).hide();
+                            alert('删除成功');
+                        }
+                        else {
+                            alert('失败！');
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+    <script>
+        $('#spell').change(function () {
+            var spell = $('#spell').val();
+            var data = {
+                'spell': spell
+            };
+            $.ajax({
+                type: "POST",
+                async: true,
+                traditional: true,
+                data: data,
+                url: "{{ url_for('ad_plugin.spell') }}",
+                success: function (ret) {
+                    list = JSON.parse(ret).list;
+                    var str = '<option value="">--请选择--</option>';
+                    $(list).each(function () {
+                        str += '<option value=' + this.id + '>' + this.title + '</option>'
+                    });
+                    $('#ad_id').html(str)
+                }
+            })
+        })
+    </script>
+{% endblock %}

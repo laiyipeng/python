@@ -1,0 +1,34 @@
+{% macro render_pagination() %}
+    <ul class="pagination" style="float: right">
+        {% if pagination.has_prev %}
+            <li><a href="?page={{ pagination.page - 1 }}{{ args }}">«</a></li>
+        {% else %}
+            <li class="disabled"><a href="#">«</a></li>
+        {% endif %}
+        {%- for page in pagination.iter_pages() %}
+            {% if page %}
+                {% if page != pagination.page %}
+                    <li class="">
+                        <a href="?page={{ page }}{{ args }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="active">
+                        <a href="?page={{ page }}{{ args }}">{{ page }}</a>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="disabled">
+                    <a>......</a>
+                </li>
+            {% endif %}
+        {%- endfor %}
+        {% if pagination.has_next %}
+            <li><a href="?page={{ pagination.page + 1 }}{{ args }}">»</a></li>
+        {% else %}
+            <li class="disabled"><a href="#">»</a></li>
+        {% endif %}
+        <li class="disabled">
+            <a style="color:black;">共{{ pagination.total_count }}条记录</a>
+        </li>
+    </ul>
+{% endmacro %}

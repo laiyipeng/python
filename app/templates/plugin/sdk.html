@@ -1,0 +1,63 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('sdk') }}
+{% endblock %}
+
+{% block content %}
+    <div class="page-header head-green">
+        <h3><i class="circular table icon"></i>sdk数据</h3>
+    </div>
+    <form class="well form-inline well-form" action="" method="get">
+        <input name="channel" type="text" class="span2" placeholder="渠道号搜索" value="{{ channel }}"/>
+        <input type="text" id="dateHidden1" name="sdate" placeholder="开始日期" value="{{ sdate }}"
+               onclick="WdatePicker({el:'dateHidden1',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+               src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+        <input type="text" id="dateHidden2" name="edate" placeholder="结束日期" value="{{ edate }}"
+               onclick="WdatePicker({el:'dateHidden2',dateFmt:'yyyy-MM-dd',onpicked:function(){document.getElementById('dateDisplay').value=$dp.cal.getP('y','yyyy')+$dp.cal.getP('M','MM')+($dp.cal.getP('d','dd')<11?'上旬':($dp.cal.getP('d','dd')<21?'中旬':'下旬'));}})"
+               src="skin/datePicker.gif" width="16" height="22" align="absmiddle" style="width:92px;"/>
+        <button type="submit" class="ui button mini blue" value="">查询</button>
+
+        <span style="margin-left: 20px" class="ui buttons mini">
+        <button class="blue button ui inverted" name="day" value='-1'><i class="left chevron icon"></i>上一天</button>
+        <div class="or"></div>
+        <button class="green button ui inverted"  name="day" value='1'>下一天<i class="right chevron icon"></i></button>
+        </span>
+    </form>
+    <table class="table" id="table" style="margin-bottom: 100px; width: 80%">
+    <caption style="text-align: center; font-size: 16px">
+                <p class="large ui label pointing below " style="padding-right:30px;">
+                    sdk新增激活用户：{{ total }}
+                </p>
+            </caption>
+        <thead>
+        <tr>
+            <th data-table-sortable-type="string">开发者</th>
+            <th>渠道号</th>
+            <th>新增激活用户</th>
+            <th>启动次数</th>
+            <th>重复安装数</th>
+            <th>未去重新增数</th>
+            <th data-table-sortable-type="date">日期</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form method="post">
+            {% if query %}
+                {% for item in query %}
+                    <tr>
+                        <td><a title="{{ item.dev_id }}">{{ item.dev }}</a></td>
+                        <td>{{ item.channel }}</td>
+                        <td>{{ item.active_new }}</td>
+                        <td>{{ item.launch }}</td>
+                        <td>{{ item.re_install }}</td>
+                        <td>{{ item.active_all }}</td>
+                        <td>{{ item.time }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </form>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "plugin/layout.html" %}
+{% block title %}广告计划{% endblock %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('list') }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="/static/css/checkbox.css" rel="stylesheet" type="text/css"/>
+    <style>
+    #province{
+        float: none;
+        margin: 0;
+    }
+    .dropdown{
+        width: 100%;
+    }
+    .ui.dropdown.selection{
+        width: 100%;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h3 class="ui horizontal divider header"><i class="circular plan icon"></i> 计划 </h3>
+    <form class="form-horizontal" method="post" enctype=multipart/form-data style="width: 90%">
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">广告名称：</label>
+
+            <div class="col-sm-4">
+                <label class="form-control-static">{{ query.title }}</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">省份选择：</label>
+
+            <div class="col-sm-4" style="background-color: #efe9ff; padding: 20px; float: left" id="provinces">
+                <div>
+                {% for k,v in province_id_dict.items() %}
+                <button type="button" class="btn {% if k not in query.region_limit %}btn-success {% else %} btn-default{% endif %}" style="margin: 5px" value="{{ k }}" onclick="change_class(this)">{{ v }}</button>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">时间段选择：</label>
+
+            <div class="col-sm-4" style="background-color: #efe9ff; padding: 20px" id="times">
+                <div>
+                {% for i in range(1, 25) %}
+                <button type="button" class="btn {% if i not in query.time_limit %}btn-success {% else %} btn-default{% endif %}" style="margin: 5px" value="{{ i }}" onclick="change_class(this)">{{ i }}</button>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    <div class="form-group">
+            <label for="" class="col-sm-2 control-label">运营商：</label>
+
+            <div class="col-sm-4" style="background-color: #efe9ff; padding: 20px; float: left" id="carrier">
+                <div>
+                <button type="button" class="btn {% if query.carrier[-1] != '1' %}btn-success {% else %} btn-default{% endif %}" style="margin: 5px" value="1" onclick="change_class(this)">无sim卡</button>
+                <button type="button" class="btn {% if query.carrier[-2] != '1' %}btn-success {% else %} btn-default{% endif %}" style="margin: 5px" value="2" onclick="change_class(this)">移动</button>
+                <button type="button" class="btn {% if query.carrier[-3] != '1' %}btn-success {% else %} btn-default{% endif %}" style="margin: 5px" value="4" onclick="change_class(this)">联通</button>
+                <button type="button" class="btn {% if query.carrier[-4] != '1' %}btn-success {% else %} btn-default{% endif %}" style="margin: 5px" value="8" onclick="change_class(this)">电信</button>
+                </div>
+            </div>
+        </div>
+
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        {% if message == '添加成功' %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% else %}
+                            <div class="alert alert-error">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+
+        <div class="form-group">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-7"><input type="button" onclick="post()" class="btn btn-primary btn-lg" value="提 交"></div>
+        </div>
+
+
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="http://static.wauee.com/base/jquery/jquery-1.7.2.min.js"></script>
+    <script src="http://static.wauee.com/base/jquery/jquery.form.js"></script>
+    <script src="http://static.wauee.com/base/bootstrap/2.32/js/bootstrap.min.js"></script>
+    <script src="http://static.wauee.com/base/jquery/jquery.uploadfile.js?v-1004"></script>
+    <script>
+        function change_class(obj){
+            console.log($(obj).attr('class').indexOf('btn-success'));
+            if ($(obj).attr('class').indexOf('btn-success')>0){
+                $(obj).removeClass('btn-success');
+                $(obj).addClass('btn-default');
+            }
+            else{
+                $(obj).removeClass('btn-default');
+                $(obj).addClass('btn-success')
+            }
+        }
+    </script>
+
+    <script>
+        function post() {
+            var province_list = [];
+            var time_list = [];
+            var carrier_list = [];
+            var provinces = $('#provinces .btn-default').each(
+                    function(){
+                        province_list.push($(this).val())
+                    }
+            );
+            var times = $('#times .btn-default').each(
+                    function(){
+                        time_list.push($(this).val())
+                    }
+            );
+            var carrier = $('#carrier .btn-default').each(
+                    function(){
+                        carrier_list.push($(this).val())
+                    }
+            );
+
+            var data = {
+                'province_list': province_list,
+                'time_list': time_list,
+                'carrier_list': carrier_list,
+                'id': {{ query.id }}
+            };
+            $.ajax({
+                type: "POST",
+                async: true,
+                traditional: true,
+                data: data,
+                url: "{{ url_for('ad_plugin.plan_edit') }}",
+                success: function (ret) {
+                    if (ret) {
+                        alert('保存成功');
+                        location.href='{{ url_for('ad_plugin.ad_list') }}'
+                    }
+                    else {
+                        alert('保存失败');
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}

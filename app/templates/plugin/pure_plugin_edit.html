@@ -1,0 +1,82 @@
+{% extends "plugin/layout.html" %}
+{% block title %}广告列表{% endblock %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('list') }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="/static/css/checkbox.css" rel="stylesheet" type="text/css"/>
+    <style>
+        .hide {
+            display: none;
+        }
+    .ui.dropdown.selection{
+        width: 100%;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h3 class="ui horizontal divider header"><i class="circular tag icon"></i> 广告编辑 </h3>
+
+
+    <form class="form-horizontal" method="post" enctype=multipart/form-data style="width: 90%" onsubmit="judge_info()">
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">推送文字：</label>
+
+            <div class="col-sm-4">
+                <input class="form-control" value="{{ query.contant }}" name="contant">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">链接地址：</label>
+
+            <div class="col-sm-4">
+                <input class="form-control" value="{{ query.target }}" name="target">
+            </div>
+            <div class="col-sm-5">
+                <button type="button" class="btn btn-sm btn-danger hide" id="target">！</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="" class="col-sm-2 control-label">包名：</label>
+
+            <div class="col-sm-4">
+                <input class="form-control" value="{{ query.package_name }}" name="package_name">
+            </div>
+            <div class="col-sm-5">
+                <button type="button" class="btn btn-sm btn-danger hide" id="package_name">！</button>
+            </div>
+        </div>
+
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        {% if message == '添加成功' %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% else %}
+                            <div class="alert alert-error">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+
+        <div class="form-group">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-7">
+                <input type="submit" class="btn btn-primary btn-lg" value="提 交" id="submit">
+            </div>
+        </div>
+
+
+    </form>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('data_warning') }}
+{% endblock %}
+
+{% block content %}
+    <span class="ui horizontal divider header"><i class="tag icon"></i> 预警水位 </span>
+
+    <div class="container well" style="">
+        <form method="post">
+            <div class="ui form">
+
+                <div class="fields two">
+                    <div class="field">
+                        <label>机型（百分比%）</label>
+                        <input type="text" name="phone_type" placeholder="" value="{{ query.phone_type }}">
+                    </div>
+                    <div class="field">
+                        <label>地区（百分比%）</label>
+                        <input type="text" name="location" placeholder="" value="{{ query.location }}">
+                    </div>
+                </div>
+
+                <div class="fields two">
+                    <div class="field">
+                        <label>网络（百分比%）</label>
+                        <input type="text" name="network" placeholder="" value="{{ query.network }}">
+                    </div>
+                    <div class="field">
+                        <label>安装分布（百分比%）</label>
+                        <input type="text" name="install_distribution" placeholder=""
+                               value="{{ query.install_distribution }}">
+                    </div>
+                </div>
+
+                <div class="fields two">
+                    <div class="field">
+                        <label>安装新增（百分比%）</label>
+                        <input type="text" name="install_active" placeholder="" value="{{ query.install_active }}">
+                    </div>
+                    <div class="field">
+                        <label>无SIM卡（百分比%）</label>
+                        <input type="text" name="sim_has" placeholder="" value="{{ query.sim_has }}">
+                    </div>
+                </div>
+
+                <button class="button ui block" type="submit">确认</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

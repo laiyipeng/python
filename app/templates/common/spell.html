@@ -1,0 +1,32 @@
+{% macro spell() %}
+    <select name="spell" id="spell" style="width: 100px">
+        <option value="">首字母</option>
+        <option {% if spell == 'A' %}selected{% endif %}>A</option>
+        <option {% if spell == 'B' %}selected{% endif %}>B</option>
+        <option {% if spell == 'C' %}selected{% endif %}>C</option>
+        <option {% if spell == 'D' %}selected{% endif %}>D</option>
+        <option {% if spell == 'E' %}selected{% endif %}>E</option>
+        <option {% if spell == 'F' %}selected{% endif %}>F</option>
+        <option {% if spell == 'G' %}selected{% endif %}>G</option>
+        <option {% if spell == 'H' %}selected{% endif %}>H</option>
+        <option {% if spell == 'I' %}selected{% endif %}>I</option>
+        <option {% if spell == 'J' %}selected{% endif %}>J</option>
+        <option {% if spell == 'K' %}selected{% endif %}>K</option>
+        <option {% if spell == 'L' %}selected{% endif %}>L</option>
+        <option {% if spell == 'M' %}selected{% endif %}>M</option>
+        <option {% if spell == 'N' %}selected{% endif %}>N</option>
+        <option {% if spell == 'O' %}selected{% endif %}>O</option>
+        <option {% if spell == 'P' %}selected{% endif %}>P</option>
+        <option {% if spell == 'Q' %}selected{% endif %}>Q</option>
+        <option {% if spell == 'R' %}selected{% endif %}>R</option>
+        <option {% if spell == 'S' %}selected{% endif %}>S</option>
+        <option {% if spell == 'T' %}selected{% endif %}>T</option>
+        <option {% if spell == 'U' %}selected{% endif %}>U</option>
+        <option {% if spell == 'V' %}selected{% endif %}>V</option>
+        <option {% if spell == 'W' %}selected{% endif %}>W</option>
+        <option {% if spell == 'X' %}selected{% endif %}>X</option>
+        <option {% if spell == 'Y' %}selected{% endif %}>Y</option>
+        <option {% if spell == 'Z' %}selected{% endif %}>Z</option>
+        <option {% if spell == '#' %}selected{% endif %} value="#">其他</option>
+    </select>
+{% endmacro %}

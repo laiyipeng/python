@@ -1,0 +1,167 @@
+{% extends "plugin/layout.html" %}
+
+{% block sidebar_nav %}
+    {% from "common/sidebar.html" import sidebar_nav with context %}
+    {{ sidebar_nav('channel') }}
+{% endblock %}
+
+{% block content %}
+    <h3 class="ui horizontal divider header"><i class="tag icon"></i> 形式选择 </h3>
+
+
+    <div class="container well" style="">
+        <form method="post">
+            <div class="ui form">
+                <div class="fields two">
+                    <div class="field">
+                        <label>渠道</label>
+                        <span><h3>{{ query.channel }}</h3></span>
+                    </div>
+                    <div class="field">
+                        <label>开发者</label>
+                        <span><h3>{{ query.dev }}</h3></span>
+                    </div>
+                </div>
+                <div class="fields two">
+                    <div class="field">
+                        <label>类型</label>
+                        <select class="ui dropdown" name="type">
+                            <option value="1">美女娱乐类</option>
+                            <option value="2">应用工具类</option>
+                            <option value="3">手机游戏类</option>
+                            <option value="0">通用类</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>匹配素材类型</label>
+                        <select class="ui dropdown" name="source_type">
+                            <option value="0">美女类</option>
+                            <option value="1">通用类</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="fields two">
+                    <div class="field">
+                        <label>打图标个数（个）</label>
+                        <input type="text" name="logo_num" placeholder="" value="{{ query.logo_num }}">
+                    </div>
+                    <div class="field">
+                        <label>广告弹出模式</label>
+                        <select class="ui dropdown" name="ad_show_mode">
+                            <option value="0" {% if query.ad_show_mode == 0 %}selected{% endif %}>应用内外弹出广告</option>
+                            <option value="1" {% if query.ad_show_mode == 1 %}selected{% endif %}>第一次应用内弹出广告，其他应用外弹出
+                            </option>
+                            <option value="2" {% if query.ad_show_mode == 2 %}selected{% endif %}>始终应用外弹出</option>
+                            <option value="3" {% if query.ad_show_mode == 3 %}selected{% endif %}>始终应用内弹出</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fields two">
+                    <div class="field">
+                        <label>横屏间隔（秒）</label>
+                        <input type="text" name="bn_msg_interval" placeholder="" value="{{ query.bn_msg_interval }}">
+                    </div>
+                    <div class="field">
+                        <label>插屏间隔（秒）</label>
+                        <input type="text" name="cp_msg_interval" placeholder="" value="{{ query.cp_msg_interval }}">
+                    </div>
+
+                </div>
+                <div class="fields two">
+                    <div class="field">
+                        <label>开屏间隔（秒）</label>
+                        <input type="text" name="kp_msg_interval" placeholder="" value="{{ query.kp_msg_interval }}">
+                    </div>
+                    <div class="field">
+                        <label>视频间隔（秒）</label>
+                        <input type="text" name="md_msg_interval" placeholder="" value="{{ query.md_msg_interval }}">
+                    </div>
+                </div>
+
+                <div class="fields two">
+                    <div class="field">
+                        <label>图标间隔（秒）</label>
+                        <input type="text" name="logo_msg_interval" placeholder=""
+                               value="{{ query.logo_msg_interval }}">
+                    </div>
+                    <div class="field">
+                        <label>推送间隔（秒）</label>
+                        <input type="text" name="push_msg_interval" placeholder=""
+                               value="{{ query.push_msg_interval }}">
+                    </div>
+                </div>
+
+                <div class="fields two">
+                    <div class="field">
+                        <label>系统提示间隔（秒）</label>
+                        <input type="text" name="xtts_msg_interval" placeholder=""
+                               value="{{ query.xtts_msg_interval }}">
+                    </div>
+                    <div class="field">
+                        <label>系统提示（不带取消按钮）间隔（秒）</label>
+                        <input type="text" name="xtts2_msg_interval" placeholder=""
+                               value="{{ query.xtts2_msg_interval }}">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>广告形式</label>
+                    <select multiple="" class="ui dropdown" name="exemplar">
+                        <option value="1" {% if exemplar[-1] == '1' %}selected{% endif %}>广告条</option>
+                        <option value="2" {% if exemplar[-2] == '1' %}selected{% endif %}>插屏</option>
+                        <option value="4" {% if exemplar[-3] == '1' %}selected{% endif %}>开屏</option>
+                        <option value="8" {% if exemplar[-4] == '1' %}selected{% endif %}>富媒体</option>
+                        <option value="16" {% if exemplar[-5] == '1' %}selected{% endif %}>图标</option>
+                        <option value="32" {% if exemplar[-6] == '1' %}selected{% endif %}>推送</option>
+                        <option value="128" {% if exemplar[-8] == '1' %}selected{% endif %}>系统提示框</option>
+                        <option value="256" {% if exemplar[-9] == '1' %}selected{% endif %}>系统提示框（不带取消按钮）</option>
+                        <option value="512" {% if exemplar[-10] == '1' %}selected{% endif %}>悬浮</option>
+                        <option value="1024" {% if exemplar[-11] == '1' %}selected{% endif %}>文件夹</option>
+                        <option value="2048" {% if exemplar[-12] == '1' %}selected{% endif %}>退出提示</option>
+                    </select>
+                </div>
+
+                <div class="field two">
+                    <div class="ui slider checkbox">
+                        <input name="quality" id="quality" value="1" type="checkbox"
+                               {% if query.quality == 1 %}checked{% endif %}>
+                        <label>是否开启静默</label>
+                    </div>
+                    <div class="ui slider checkbox">
+                        <input name="install_interface" id="install_interface" value="1" type="checkbox"
+                               {% if query.install_interface == 1 %}checked{% endif %}>
+                        <label>是否启动单个应用安装界面</label>
+                    </div>
+                    <div class="ui slider checkbox">
+                        <input name="gdt_thdflag" id="gdt_thdflag" value="1" type="checkbox"
+                               {% if query.gdt_thdflag == 1 %}checked{% endif %}>
+                        <label>广点通开关</label>
+                    </div>
+                    <div class="ui slider checkbox">
+                        <input name="xf_thdflag" id="xf_thdflag" value="1" type="checkbox"
+                               {% if query.xf_thdflag == 1 %}checked{% endif %}>
+                        <label>讯飞开关</label>
+                    </div>
+                </div>
+
+
+                <button class="button ui block" type="submit">确认</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $('.ui.form')
+        // set one value
+        // set several values
+            .form('set values', {
+                type: '{{ query.type }}',
+                source_type: '{{ query.source_type }}'
+            })
+        ;
+    </script>
+{% endblock %}
